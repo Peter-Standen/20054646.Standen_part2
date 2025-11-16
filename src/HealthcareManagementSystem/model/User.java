@@ -2,42 +2,42 @@ package HealthcareManagementSystem.model;
 
 public class User {
 
-    private String userId;
-    private String firstName;
-    private String lastName;
+    private String user_number;
+    private String first_name;
+    private String last_name;
     private String email;
-    private String phoneNumber;
+    private String phone_number;
 
-    public User(String userId, String firstName, String lastName, String email, String phoneNumber) {
-        this.userId = userId;
-        this.firstName = firstName;
-        this.lastName = lastName;
+    public User(String user_number, String first_name, String last_name, String email, String phone_number) {
+        this.user_number = user_number;
+        this.first_name = first_name;
+        this.last_name = last_name;
         this.email = email;
-        this.phoneNumber = phoneNumber;
+        this.phone_number = phone_number;
     }
 
-    public String getUserId() {
-        return userId;
+    public String getUser_number() {
+        return user_number;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setUser_number(String user_number) {
+        this.user_number = user_number;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getFirst_name() {
+        return first_name;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public void setFirst_name(String first_name) {
+        this.first_name = first_name;
     }
 
-    public String getLastName() {
-        return lastName;
+    public String getLast_name() {
+        return last_name;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setLast_name(String last_name) {
+        this.last_name = last_name;
     }
 
     public String getEmail() {
@@ -48,11 +48,11 @@ public class User {
         this.email = email;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
+    public String getPhone_number() {
+        return phone_number;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+    public void setPhone_number(String phone_number) {
+        this.phone_number = phone_number;
     }
 }
