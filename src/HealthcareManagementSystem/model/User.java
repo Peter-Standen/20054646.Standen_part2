@@ -1,8 +1,10 @@
 package HealthcareManagementSystem.model;
 
+import java.util.UUID;
+
 public class User {
 
-    private String user_number;
+    private UUID user_number;
     private String first_name;
     private String last_name;
     private String email;
