@@ -1,22 +1,21 @@
 package HealthcareManagementSystem.model;
 
-public class Admin extends Staff{
+import java.util.UUID;
 
-    private String address;
-    private String postcode;
+public class Admin extends Staff {
 
-    public Admin(String address, String postcode) {
-        this.address = address;
-        this.postcode = postcode;
-    }
+    public Admin(UUID user_number,
+                 String first_name,
+                 String last_name,
+                 String email,
+                 String phone_number,
+                 UUID staff_id,
+                 Integer payroll_number,
+                 String department,
+                 String line_manager,
+                 String access_level) {
 
-    public String getAddress() {
-        return address;
-    }
-    public void setAddress(String address) {
-        this.address = address;
-    }
-    public String getPostcode() {
-        return postcode;
+        super(user_number, first_name, last_name, email, phone_number,
+                staff_id, payroll_number, department, line_manager, access_level);
     }
 }
