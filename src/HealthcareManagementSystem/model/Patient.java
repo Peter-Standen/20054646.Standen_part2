@@ -14,7 +14,7 @@ public class Patient extends User {
     private Date registration_date;
     private UUID gp_surgery_id;
 
-    public Patient(String user_number,
+    public Patient(UUID user_number,
                    String first_name,
                    String last_name,
                    String email,

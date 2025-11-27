@@ -1,3 +1,5 @@
+package HealthcareManagementSystem.model;
+
 public class PhoneNumber {
     private String value;
 
