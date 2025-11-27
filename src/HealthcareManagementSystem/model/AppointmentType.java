@@ -12,11 +12,8 @@ public enum AppointmentType {
 
     private final int value;
 
-    AppointmentType(int value) {
-        this.value = value;
-    }
+    AppointmentType(int value) { this.value = value; }
 
-    public int getValue() {
-        return value;
-    }
+    // get methods
+    public int getValue() { return value; }
 }

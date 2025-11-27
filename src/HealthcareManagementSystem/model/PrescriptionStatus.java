@@ -10,12 +10,9 @@ public enum PrescriptionStatus {
 
     private final int value;
 
-    PrescriptionStatus(int value) {
-        this.value = value;
-    }
+    PrescriptionStatus(int value) { this.value = value; }
 
-    public int getValue() {
-        return value;
-    }
-}
+    // get methods
+    public int getValue() { return value; }
+
 }

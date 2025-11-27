@@ -10,12 +10,8 @@ public enum ClinicianType {
 
     private final int value;
 
-    ClinicianType(int value) {
-        this.value = value;
-    }
+    ClinicianType(int value) { this.value = value; }
 
-    public int getValue() {
-        return value;
-    }
-}
+    // get methods
+    public int getValue() { return value; }
 }

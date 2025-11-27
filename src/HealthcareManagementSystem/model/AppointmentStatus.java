@@ -7,11 +7,8 @@ public enum AppointmentStatus {
 
     private final int value;
 
-    AppointmentStatus(int value) {
-        this.value = value;
-    }
+    AppointmentStatus(int value) { this.value = value; }
 
-    public int getValue() {
-        return value;
-    }
+    // get methods
+    public int getValue() { return value; }
 }

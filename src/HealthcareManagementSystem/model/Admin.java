@@ -15,7 +15,7 @@ public class Admin extends Staff {
                  String line_manager,
                  String access_level) {
 
-        super(user_number, first_name, last_name, email, phone_number,
-                staff_id, payroll_number, department, line_manager, access_level);
+        super(user_number, first_name, last_name, email, phone_number, staff_id,
+                payroll_number, department, line_manager, access_level);
     }
 }

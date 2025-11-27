@@ -8,12 +8,8 @@ public enum CommunicationMethod {
 
     private final int value;
 
-    CommunicationMethod(int value) {
-        this.value = value;
-    }
+    CommunicationMethod(int value) { this.value = value; }
 
-    public int getValue() {
-        return value;
-    }
-}
+    // get methods
+    public int getValue() { return value; }
 }

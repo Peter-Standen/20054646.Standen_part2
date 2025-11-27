@@ -32,66 +32,24 @@ public class Patient extends User {
         this.gp_surgery_id = UUID.randomUUID();
     }
 
-    public UUID getPatient_id() {
-        return patient_id;
-    }
+    // get methods
+    public UUID getPatient_id() { return patient_id; }
+    public Integer getNhs_number() { return nhs_number; }
+    public Date getDate_of_birth() { return date_of_birth; }
+    public String getGender() { return gender; }
+    public String getEmergency_contact_name() { return emergency_contact_name; }
+    public String getEmergency_contact_phone() { return emergency_contact_phone; }
+    public Date getRegistration_date() { return registration_date; }
+    public UUID getGp_surgery_id() { return gp_surgery_id; }
 
-    public void setPatient_id(UUID patient_id) {
-        this.patient_id = patient_id;
-    }
+    // set methods
+    public void setPatient_id(UUID patient_id) { this.patient_id = patient_id; }
+    public void setNhs_number(Integer nhs_number) { this.nhs_number = nhs_number; }
+    public void setDate_of_birth(Date date_of_birth) { this.date_of_birth = date_of_birth; }
+    public void setGender(String gender) { this.gender = gender; }
+    public void setEmergency_contact_name(String emergency_contact_name) { this.emergency_contact_name = emergency_contact_name; }
+    public void setEmergency_contact_phone(String emergency_contact_phone) { this.emergency_contact_phone = emergency_contact_phone; }
+    public void setRegistration_date(Date registration_date) { this.registration_date = registration_date; }
+    public void setGp_surgery_id(UUID gp_surgery_id) { this.gp_surgery_id = gp_surgery_id; }
 
-    public Integer getNhs_number() {
-        return nhs_number;
-    }
-
-    public void setNhs_number(Integer nhs_number) {
-        this.nhs_number = nhs_number;
-    }
-
-    public Date getDate_of_birth() {
-        return date_of_birth;
-    }
-
-    public void setDate_of_birth(Date date_of_birth) {
-        this.date_of_birth = date_of_birth;
-    }
-
-    public String getGender() {
-        return gender;
-    }
-
-    public void setGender(String gender) {
-        this.gender = gender;
-    }
-
-    public String getEmergency_contact_name() {
-        return emergency_contact_name;
-    }
-
-    public void setEmergency_contact_name(String emergency_contact_name) {
-        this.emergency_contact_name = emergency_contact_name;
-    }
-
-    public String getEmergency_contact_phone() {
-        return emergency_contact_phone;
-    }
-
-    public void setEmergency_contact_phone(String emergency_contact_phone) {
-        this.emergency_contact_phone = emergency_contact_phone;
-    }
-
-    public Date getRegistration_date() {
-        return registration_date;
-    }
-
-    public void setRegistration_date(Date registration_date) {
-        this.registration_date = registration_date; }
-
-    public UUID getGp_surgery_id() {
-        return gp_surgery_id;
-    }
-
-    public void setGp_surgery_id(UUID gp_surgery_id) {
-        this.gp_surgery_id = gp_surgery_id;
-    }
 }

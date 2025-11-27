@@ -42,59 +42,23 @@ public class Clinician extends Staff {
         this.start_date = start_date;
     }
 
+    // get methods
     public UUID getClinician_id() {
         return clinician_id;
     }
+    public String getGmc_number() { return gmc_number; }
+    public ClinicianType getTitle() { return title; }
+    public String getSpeciality() { return speciality; }
+    public String getWorkplace_type() { return workplace_type; }
+    public EmploymentStatus getEmployment_status() { return employment_status; }
+    public Date getStart_date() { return start_date; }
 
-    public void setClinician_id(UUID clinician_id) {
-        this.clinician_id = clinician_id;
-    }
-
-    public String getGmc_number() {
-        return gmc_number;
-    }
-
-    public void setGmc_number(String gmc_number) {
-        this.gmc_number = gmc_number;
-    }
-
-    public ClinicianType getTitle() {
-        return title;
-    }
-
-    public void setTitle(ClinicianType title) {
-        this.title = title;
-    }
-
-    public String getSpeciality() {
-        return speciality;
-    }
-
-    public void setSpeciality(String speciality) {
-        this.speciality = speciality;
-    }
-
-    public String getWorkplace_type() {
-        return workplace_type;
-    }
-
-    public void setWorkplace_type(String workplace_type) {
-        this.workplace_type = workplace_type;
-    }
-
-    public EmploymentStatus getEmployment_status() {
-        return employment_status;
-    }
-
-    public void setEmployment_status(EmploymentStatus employment_status) {
-        this.employment_status = employment_status;
-    }
-
-    public Date getStart_date() {
-        return start_date;
-    }
-
-    public void setStart_date(Date start_date) {
-        this.start_date = start_date;
-    }
+    // set methods
+    public void setClinician_id(UUID clinician_id) { this.clinician_id = clinician_id; }
+    public void setGmc_number(String gmc_number) { this.gmc_number = gmc_number; }
+    public void setTitle(ClinicianType title) { this.title = title; }
+    public void setSpeciality(String speciality) { this.speciality = speciality; }
+    public void setWorkplace_type(String workplace_type) { this.workplace_type = workplace_type; }
+    public void setEmployment_status(EmploymentStatus employment_status) { this.employment_status = employment_status; }
+    public void setStart_date(Date start_date) { this.start_date = start_date; }
 }
