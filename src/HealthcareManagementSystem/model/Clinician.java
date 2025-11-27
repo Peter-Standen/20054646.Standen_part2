@@ -1,7 +1,5 @@
 package HealthcareManagementSystem.model;
 
-import HealthcareManagementSystem.data.StaffCsvRepository;
-
 import java.util.Date;
 import java.util.UUID;
 
@@ -10,12 +8,12 @@ public class Clinician extends Staff {
     private UUID clinician_id;
     private String gmc_number;
     private ClinicianType title;
-    private Speciality speciality;
+    private String speciality;
     private String workplace_type;
     private EmploymentStatus employment_status;
     private Date start_date;
 
-    public Clinician(String user_number,
+    public Clinician(UUID user_number,
                      String first_name,
                      String last_name,
                      String email,
@@ -25,10 +23,10 @@ public class Clinician extends Staff {
                      String department,
                      String line_manager,
                      String access_level,
-                     String clinician_id,
+                     UUID clinician_id,
                      String gmc_number,
                      ClinicianType title,
-                     Speciality speciality,
+                     String speciality,
                      String workplace_type,
                      EmploymentStatus employment_status,
                      Date start_date) {
@@ -44,11 +42,11 @@ public class Clinician extends Staff {
         this.start_date = start_date;
     }
 
-    public String getClinician_id() {
+    public UUID getClinician_id() {
         return clinician_id;
     }
 
-    public void setClinician_id(String clinician_id) {
+    public void setClinician_id(UUID clinician_id) {
         this.clinician_id = clinician_id;
     }
 
@@ -68,11 +66,11 @@ public class Clinician extends Staff {
         this.title = title;
     }
 
-    public Speciality getSpeciality() {
+    public String getSpeciality() {
         return speciality;
     }
 
-    public void setSpeciality(Speciality speciality) {
+    public void setSpeciality(String speciality) {
         this.speciality = speciality;
     }
 
