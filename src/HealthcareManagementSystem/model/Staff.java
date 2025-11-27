@@ -1,9 +1,8 @@
 package HealthcareManagementSystem.model;
 
-import java.util.Date;
 import java.util.UUID;
 
-public class Admin extends Staff {
+public class Staff extends User {
 
     private UUID staff_id;
     private Integer payrollNumber;
@@ -11,12 +10,13 @@ public class Admin extends Staff {
     private String line_manager;
     private String access_level;
 
+    // Correct constructor
     public Staff(UUID user_number,
                  String first_name,
                  String last_name,
                  String email,
                  String phone_number,
-                 String staff_id,
+                 UUID staff_id,
                  Integer payroll_number,
                  String department,
                  String line_manager,
@@ -29,16 +29,13 @@ public class Admin extends Staff {
         this.department = department;
         this.line_manager = line_manager;
         this.access_level = access_level;
-
-}
-
+    }
     public UUID getStaff_id() {
         return staff_id;
     }
     public void setStaff_id(UUID staff_id) {
         this.staff_id = staff_id;
     }
-
     public Integer getPayrollNumber() {
         return payrollNumber;
     }
@@ -60,5 +57,7 @@ public class Admin extends Staff {
     public String getAccess_level() {
         return access_level;
     }
+    public void setAccess_level(String access_level) {
+        this.access_level = access_level;
+    }
 }
-

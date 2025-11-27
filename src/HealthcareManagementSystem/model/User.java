@@ -10,7 +10,7 @@ public class User {
     private String email;
     private String phone_number;
 
-    public User(String user_number, String first_name, String last_name, String email, String phone_number) {
+    public User(UUID user_number, String first_name, String last_name, String email, String phone_number) {
         this.user_number = user_number;
         this.first_name = first_name;
         this.last_name = last_name;
@@ -18,11 +18,11 @@ public class User {
         this.phone_number = phone_number;
     }
 
-    public String getUser_number() {
+    public UUID getUser_number() {
         return user_number;
     }
 
-    public void setUser_number(String user_number) {
+    public void setUser_number(UUID user_number) {
         this.user_number = user_number;
     }
 
