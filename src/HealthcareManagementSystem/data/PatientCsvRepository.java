@@ -2,9 +2,12 @@ package HealthcareManagementSystem.data;
 
 import HealthcareManagementSystem.model.Patient;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.Date;
 
 public class PatientCsvRepository {
 
@@ -15,39 +18,38 @@ public class PatientCsvRepository {
     }
 
     public List<Patient> loadAll() {
-        List<String[]> rows = CsvReader.read(path);
-        List<Patient> out = new ArrayList<>();
+        List<Patient> patients = new ArrayList<>();
 
-        for (String[] r : rows) {
-            Patient p = new Patient(
-                    UUID.fromString(r[0]),
-                    r[1],
-                    r[2],
-                    r[3],
-                    r[4]
-            );
+        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+            String line;
+            boolean header = true;
 
-            p.setPatient_id(UUID.fromString(r[5]));
-            p.setNhs_number(Integer.parseInt(r[6]));
+            while ((line = br.readLine()) != null) {
+                if (header) {
+                    header = false;
+                    continue;
+                }
 
-            out.add(p);
+                String[] r = line.split(",");
+
+                Patient p = new Patient(
+                        UUID.fromString(r[0]),
+                        r[1],   // firstName
+                        r[2],   // lastName
+                        r[3],   // email
+                        r[4]    // phoneNumber
+                );
+
+                p.setPatientId(UUID.fromString(r[5]));
+                p.setNhsNumber(Integer.parseInt(r[6]));
+                p.setDateOfBirth(new Date()); // or parse if required
+
+                patients.add(p);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        return out;
-    }
 
-    public void append(Patient p) {
-        CsvWriter.appendLine(path, toRow(p));
-    }
-
-    private String[] toRow(Patient p) {
-        return new String[] {
-                p.getId().toString(),
-                p.getFirstName(),
-                p.getLastName(),
-                p.getDob(),
-                p.getAddress(),
-                p.getPatient_id().toString(),
-                String.valueOf(p.getNhs_number())
-        };
+        return patients;
     }
 }

@@ -26,9 +26,9 @@ public class Main {
             ReferralsManager referralsManager = ReferralsManager.getInstance(referralRepo);
 
             AdminUI view = new AdminUI();
-            AdminController controller = new AdminController(view, patientService, prescriptionService, referralsManager);
-
+            new AdminController(view, patientService);
             view.setVisible(true);
+
         });
     }
 }

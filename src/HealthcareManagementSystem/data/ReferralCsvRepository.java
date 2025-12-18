@@ -2,6 +2,9 @@ package HealthcareManagementSystem.data;
 
 import HealthcareManagementSystem.model.Referral;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+
 public class ReferralCsvRepository {
 
     private final String path;
@@ -10,18 +13,28 @@ public class ReferralCsvRepository {
         this.path = path;
     }
 
-    public void append(Referral referral) {
-        CsvWriter.appendLine(path, toRow(referral));
+    public void append(Referral r) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(path, true))) {
+
+            // If your CSV needs specific column order, match your referrals.csv header order here.
+            String line =
+                    r.getReferralId() + "," +
+                            r.getUrgencyLevel() + "," +
+                            safe(r.getReferralReason()) + "," +
+                            safe(r.getClinicalSummary()) + "," +
+                            safe(r.getRequestedInvestigations()) + "," +
+                            safe(r.getStatus()) + "," +
+                            safe(r.getNotes());
+
+            bw.newLine();
+            bw.write(line);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    private String[] toRow(Referral r) {
-        return new String[] {
-                r.getId().toString(),
-                r.getPatientId().toString(),
-                r.getClinicianId().toString(),
-                r.getFacilityId().toString(),
-                r.getUrgency().toString(),
-                r.getClinicalSummary()
-        };
+    private String safe(String s) {
+        return s == null ? "" : s.replace(",", " "); // keep it simple for coursework
     }
 }
