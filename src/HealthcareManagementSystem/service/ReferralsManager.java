@@ -1,3 +1,11 @@
+package HealthcareManagementSystem.service;
+
+import HealthcareManagementSystem.data.ReferralCsvRepository;
+import HealthcareManagementSystem.model.Referral;
+
+import java.util.LinkedList;
+import java.util.Queue;
+
 public class ReferralsManager {
     private static ReferralsManager instance;
 
@@ -23,4 +31,8 @@ public class ReferralsManager {
 
         return referral;
     }
+
+    private void writeEmailIfNotExists(Referral referral) { }
+    private void writeEhrUpdateIfNotExists(Referral referral) { }
+    private void appendAudit(Referral referral, String action) { }
 }
