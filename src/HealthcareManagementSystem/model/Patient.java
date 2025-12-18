@@ -5,51 +5,51 @@ import java.util.UUID;
 
 public class Patient extends User {
 
-    private UUID patient_id;
-    private Integer nhs_number;
-    private Date date_of_birth;
+    private UUID patientId;
+    private Integer nhsNumber;
+    private Date dateOfBirth;
     private String gender;
-    private String emergency_contact_name;
-    private String emergency_contact_phone;
-    private Date registration_date;
-    private UUID gp_surgery_id;
+    private String emergencyContactName;
+    private String emergencyContactPhone;
+    private Date registrationDate;
+    private UUID gpSurgeryId;
 
-    public Patient(UUID user_number,
-                   String first_name,
-                   String last_name,
+    public Patient(UUID userNumber,
+                   String firstName,
+                   String lastName,
                    String email,
-                   String phone_number) {
+                   String phoneNumber) {
 
-        super(user_number, first_name, last_name, email, phone_number);
+        super(userNumber, firstName, lastName, email, phoneNumber);
 
-        this.patient_id = UUID.randomUUID();
-        this.nhs_number = 0;
-        this.date_of_birth = new Date();
+        this.patientId = UUID.randomUUID();
+        this.nhsNumber = null;
+        this.dateOfBirth = null;
         this.gender = "";
-        this.emergency_contact_name = "";
-        this.emergency_contact_phone = "";
-        this.registration_date = new Date();
-        this.gp_surgery_id = UUID.randomUUID();
+        this.emergencyContactName = "";
+        this.emergencyContactPhone = "";
+        this.registrationDate = new Date();
+        this.gpSurgeryId = null;
     }
 
     // get methods
-    public UUID getPatient_id() { return patient_id; }
-    public Integer getNhs_number() { return nhs_number; }
-    public Date getDate_of_birth() { return date_of_birth; }
+    public UUID getPatientId() { return patientId; }
+    public Integer getNhsNumber() { return nhsNumber; }
+    public Date getDateOfBirth() { return dateOfBirth; }
     public String getGender() { return gender; }
-    public String getEmergency_contact_name() { return emergency_contact_name; }
-    public String getEmergency_contact_phone() { return emergency_contact_phone; }
-    public Date getRegistration_date() { return registration_date; }
-    public UUID getGp_surgery_id() { return gp_surgery_id; }
+    public String getEmergencyContactName() { return emergencyContactName; }
+    public String getEmergencyContactPhone() { return emergencyContactPhone; }
+    public Date getRegistrationDate() { return registrationDate; }
+    public UUID getGpSurgeryId() { return gpSurgeryId; }
 
     // set methods
-    public void setPatient_id(UUID patient_id) { this.patient_id = patient_id; }
-    public void setNhs_number(Integer nhs_number) { this.nhs_number = nhs_number; }
-    public void setDate_of_birth(Date date_of_birth) { this.date_of_birth = date_of_birth; }
+    public void setPatientId(UUID patientId) { this.patientId = patientId; }
+    public void setNhsNumber(Integer nhsNumber) { this.nhsNumber = nhsNumber; }
+    public void setDateOfBirth(Date dateOfBirth) { this.dateOfBirth = dateOfBirth; }
     public void setGender(String gender) { this.gender = gender; }
-    public void setEmergency_contact_name(String emergency_contact_name) { this.emergency_contact_name = emergency_contact_name; }
-    public void setEmergency_contact_phone(String emergency_contact_phone) { this.emergency_contact_phone = emergency_contact_phone; }
-    public void setRegistration_date(Date registration_date) { this.registration_date = registration_date; }
-    public void setGp_surgery_id(UUID gp_surgery_id) { this.gp_surgery_id = gp_surgery_id; }
+    public void setEmergencyContactName(String emergencyContactName) { this.emergencyContactName = emergencyContactName; }
+    public void setEmergencyContactPhone(String emergencyContactPhone) { this.emergencyContactPhone = emergencyContactPhone; }
+    public void setRegistrationDate(Date registrationDate) { this.registrationDate = registrationDate; }
+    public void setGpSurgeryId(UUID gpSurgeryId) { this.gpSurgeryId = gpSurgeryId; }
 
 }

@@ -5,47 +5,47 @@ import java.util.UUID;
 
 public class Facility {
 
-    private final UUID facility_id;
-    private String facility_name;
-    private FacilityType facility_type;
+    private final UUID facilityId;
+    private String facilityName;
+    private FacilityType facilityType;
     private String address;
     private String postcode;
-    private Time opening_hours;
+    private Time openingHours;
     private Integer capacity;
-    private String specialities_offered;
-    private String manager_name;
+    private String specialitiesOffered;
+    private String managerName;
 
     public Facility() {
-        this.facility_id = UUID.randomUUID();
-        this.facility_name = null;
-        this.facility_type = null;
+        this.facilityId = UUID.randomUUID();
+        this.facilityName = null;
+        this.facilityType = null;
         this.address = null;
         this.postcode = null;
-        this.opening_hours = null;
+        this.openingHours = null;
         this.capacity = null;
-        this.specialities_offered = null;
-        this.manager_name = null;
+        this.specialitiesOffered = null;
+        this.managerName = null;
     }
 
     // Getters
-    public UUID getFacility_id() { return facility_id; }
-    public String getFacility_name() { return facility_name; }
-    public FacilityType getFacility_type() { return facility_type; }
+    public UUID getFacilityId() { return facilityId; }
+    public String getFacilityName() { return facilityName; }
+    public FacilityType getFacilityType() { return facilityType; }
     public String getAddress() { return address; }
     public String getPostcode() { return postcode; }
-    public Time getOpening_hours() { return opening_hours; }
+    public Time getOpeningHours() { return openingHours; }
     public Integer getCapacity() { return capacity; }
-    public String getSpecialities_offered() { return specialities_offered; }
-    public String getManager_name() { return manager_name; }
+    public String getSpecialitiesOffered() { return specialitiesOffered; }
+    public String getManagerName() { return managerName; }
 
     // set methods
-    public void setFacility_name(String facility_name) { this.facility_name = facility_name; }
-    public void setFacility_type(FacilityType facility_type) { this.facility_type = facility_type; }
+    public void setFacilityName(String facilityName) { this.facilityName = facilityName; }
+    public void setFacilityType(FacilityType facilityType) { this.facilityType = facilityType; }
     public void setAddress(String address) { this.address = address; }
     public void setPostcode(String postcode) { this.postcode = postcode; }
-    public void setOpening_hours(Time opening_hours) { this.opening_hours = opening_hours; }
+    public void setOpeningHours(Time openingHours) { this.openingHours = openingHours; }
     public void setCapacity(Integer capacity) { this.capacity = capacity; }
-    public void setSpecialities_offered(String specialities_offered) { this.specialities_offered = specialities_offered; }
-    public void setManager_name(String manager_name) { this.manager_name = manager_name; }
+    public void setSpecialitiesOffered(String specialitiesOffered) { this.specialitiesOffered = specialitiesOffered; }
+    public void setManagerName(String managerName) { this.managerName = managerName; }
 
 }

@@ -4,18 +4,18 @@ import java.util.UUID;
 
 public class Admin extends Staff {
 
-    public Admin(UUID user_number,
-                 String first_name,
-                 String last_name,
+    public Admin(UUID userNumber,
+                 String firstName,
+                 String lastName,
                  String email,
-                 String phone_number,
-                 UUID staff_id,
-                 Integer payroll_number,
+                 String phoneNumber,
+                 UUID staffId,
+                 Integer payrollNumber,
                  String department,
-                 String line_manager,
-                 String access_level) {
+                 String lineManager,
+                 String accessLevel) {
 
-        super(user_number, first_name, last_name, email, phone_number, staff_id,
-                payroll_number, department, line_manager, access_level);
+        super(userNumber, firstName, lastName, email, phoneNumber, staffId,
+                payrollNumber, department, lineManager, accessLevel);
     }
 }

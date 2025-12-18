@@ -5,94 +5,48 @@ import java.util.UUID;
 
 public class Referral {
 
-    private UUID referral_id;
-    private Date referral_date;
-    private Integer urgency_level;
-    private String referral_reason;
-    private String clinical_summary;
-    private String requested_investigations;
+    private UUID referralId;
+    private Date referralDate;
+    private Integer urgencyLevel;
+    private String referralReason;
+    private String clinicalSummary;
+    private String requestedInvestigations;
     private String status;
     private String notes;
-    private Date created_date;
-    private Date last_updated;
-    private CommunicationMethod communication_method;
+    private Date createdDate;
+    private Date lastUpdated;
+    private CommunicationMethod communicationMethod;
 
     public Referral() {
-        this.referral_id = UUID.randomUUID();
-        this.referral_date = new Date();
-        this.urgency_level = null;
-        this.referral_reason = null;
-        this.clinical_summary = null;
-        this.requested_investigations = null;
-        this.status = null;
-        this.notes = null;
-        this.created_date = new Date();
-        this.last_updated = new Date();
-        this.communication_method = null;
+        this.referralId = UUID.randomUUID();
+        this.referralDate = new Date();
+        this.createdDate = new Date();
+        this.lastUpdated = new Date();
     }
 
-    // get methods
-    public UUID getReferral_id() {
-        return referral_id;
-    }
-    public Date getReferral_date() {
-        return referral_date;
-    }
-    public Integer getUrgency_level() {
-        return urgency_level;
-    }
-    public String getReferral_reason() {
-        return referral_reason;
-    }
-    public String getClinical_summary() {
-        return clinical_summary;
-    }
-    public String getRequested_investigations() {
-        return requested_investigations;
-    }
-    public String getStatus() {
-        return status;
-    }
-    public String getNotes() {
-        return notes;
-    }
-    public Date getCreated_date() {
-        return created_date;
-    }
-    public Date getLast_updated() {
-        return last_updated;
-    }
-    public CommunicationMethod getCommunication_method() {
-        return communication_method;
-    }
+    // getters
+    public UUID getReferralId() { return referralId; }
+    public Date getReferralDate() { return referralDate; }
+    public Integer getUrgencyLevel() { return urgencyLevel; }
+    public String getReferralReason() { return referralReason; }
+    public String getClinicalSummary() { return clinicalSummary; }
+    public String getRequestedInvestigations() { return requestedInvestigations; }
+    public String getStatus() { return status; }
+    public String getNotes() { return notes; }
+    public Date getCreatedDate() { return createdDate; }
+    public Date getLastUpdated() { return lastUpdated; }
+    public CommunicationMethod getCommunicationMethod() { return communicationMethod; }
 
-    // set methods
-    public void setReferral_id_id(UUID referral_id) {
-        this.referral_id = referral_id;
-    }
-    public void setReferral_date(Date referral_date) { this.referral_date = referral_date; }
-    public void setUrgency_level(Integer urgency_level) {
-        this.urgency_level = urgency_level;
-    }
-    public void setReferral_reason(String referral_reason) {
-        this.referral_reason = referral_reason;
-    }
-    public void setClinical_summary(String clinical_summary) {
-        this.clinical_summary = clinical_summary;
-    }
-    public void setRequested_investigations(String requested_investigations) { this.requested_investigations = requested_investigations; }
-    public void setStatus(String status) {
-        this.status = status;
-    }
-    public void setNotes(String notes) {
-        this.notes = notes;
-    }
-    public void setCreated_date(Date created_date) {
-        this.created_date = created_date;
-    }
-    public void setLast_updated(Date last_updated) {
-        this.last_updated = last_updated;
-    }
-    public void setCommunication_method(CommunicationMethod communication_method) { this.communication_method = communication_method; }
-
+    // setters
+    public void setReferralId(UUID referralId) { this.referralId = referralId; }
+    public void setReferralDate(Date referralDate) { this.referralDate = referralDate; }
+    public void setUrgencyLevel(Integer urgencyLevel) { this.urgencyLevel = urgencyLevel; }
+    public void setReferralReason(String referralReason) { this.referralReason = referralReason; }
+    public void setClinicalSummary(String clinicalSummary) { this.clinicalSummary = clinicalSummary; }
+    public void setRequestedInvestigations(String requestedInvestigations) { this.requestedInvestigations = requestedInvestigations; }
+    public void setStatus(String status) { this.status = status; }
+    public void setNotes(String notes) { this.notes = notes; }
+    public void setCreatedDate(Date createdDate) { this.createdDate = createdDate; }
+    public void setLastUpdated(Date lastUpdated) { this.lastUpdated = lastUpdated; }
+    public void setCommunicationMethod(CommunicationMethod communicationMethod) { this.communicationMethod = communicationMethod; }
 }

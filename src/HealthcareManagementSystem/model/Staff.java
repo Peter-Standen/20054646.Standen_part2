@@ -4,44 +4,44 @@ import java.util.UUID;
 
 public class Staff extends User {
 
-    private UUID staff_id;
+    private UUID staffId;
     private Integer payrollNumber;
     private String department;
-    private String line_manager;
-    private String access_level;
+    private String lineManager;
+    private String accessLevel;
 
-    public Staff(UUID user_number,
-                 String first_name,
-                 String last_name,
+    public Staff(UUID userNumber,
+                 String firstName,
+                 String lastName,
                  String email,
-                 String phone_number,
-                 UUID staff_id,
-                 Integer payroll_number,
+                 String phoneNumber,
+                 UUID staffId,
+                 Integer payrollNumber,
                  String department,
-                 String line_manager,
-                 String access_level) {
+                 String lineManager,
+                 String accessLevel) {
 
-        super(user_number, first_name, last_name, email, phone_number);
+        super(userNumber, firstName, lastName, email, phoneNumber);
 
-        this.staff_id = staff_id;
-        this.payrollNumber = payroll_number;
+        this.staffId = staffId;
+        this.payrollNumber = payrollNumber;
         this.department = department;
-        this.line_manager = line_manager;
-        this.access_level = access_level;
+        this.lineManager = lineManager;
+        this.accessLevel = accessLevel;
     }
 
     // get methods
-    public UUID getStaff_id() { return staff_id; }
+    public UUID getStaffId() { return staffId; }
     public Integer getPayrollNumber() { return payrollNumber; }
     public String getDepartment() { return department; }
-    public String getLine_manager() { return line_manager; }
-    public String getAccess_level() { return access_level; }
+    public String getLineManager() { return lineManager; }
+    public String getAccessLevel() { return accessLevel; }
 
     // set methods
-    public void setStaff_id(UUID staff_id) { this.staff_id = staff_id; }
+    public void setStaffId(UUID staffId) { this.staffId = staffId; }
     public void setPayrollNumber(Integer payroll_number) { this.payrollNumber = payroll_number; }
     public void setDepartment(String department) { this.department = department; }
-    public void setLine_manager(String line_manager) { this.line_manager = line_manager; }
-    public void setAccess_level(String access_level) { this.access_level = access_level; }
+    public void setLineManager(String lineManager) { this.lineManager = lineManager; }
+    public void setAccessLevel(String accessLevel) { this.accessLevel = accessLevel; }
 
 }

@@ -4,43 +4,43 @@ import java.util.UUID;
 
 public class Condition {
 
-    private UUID condition_reference_number;
-    private String condition_name;
-    private String symptom_1;
-    private String symptom_2;
-    private String symptom_3;
-    private String symptom_4;
-    private String symptom_5;
-    private String additional_symptoms;
+    private UUID conditionReferenceNumber;
+    private String conditionName;
+    private String symptom1;
+    private String symptom2;
+    private String symptom3;
+    private String symptom4;
+    private String symptom5;
+    private String additionalSymptoms;
 
     public Condition() {
-        this.condition_reference_number = UUID.randomUUID();
-        this.condition_name = "";
-        this.symptom_1 = "";
-        this.symptom_2 = "";
-        this.symptom_3 = "";
-        this.symptom_4 = "";
-        this.symptom_5 = "";
-        this.additional_symptoms = "";
+        this.conditionReferenceNumber = UUID.randomUUID();
+        this.conditionName = "";
+        this.symptom1 = "";
+        this.symptom2 = "";
+        this.symptom3 = "";
+        this.symptom4 = "";
+        this.symptom5 = "";
+        this.additionalSymptoms = "";
     }
 
     // get methods
-    public UUID getCondition_reference_number() { return condition_reference_number; }
-    public String getCondition_name() { return condition_name; }
-    public String getSymptom_1() { return symptom_1; }
-    public String getSymptom_2() { return symptom_2; }
-    public String getSymptom_3() { return symptom_3; }
-    public String getSymptom_4() { return symptom_4; }
-    public String getSymptom_5() { return symptom_5; }
-    public String getAdditional_symptoms() { return additional_symptoms; }
+    public UUID getConditionReferenceNumber() { return conditionReferenceNumber; }
+    public String getConditionName() { return conditionName; }
+    public String getSymptom1() { return symptom1; }
+    public String getSymptom2() { return symptom2; }
+    public String getSymptom3() { return symptom3; }
+    public String getSymptom4() { return symptom4; }
+    public String getSymptom5() { return symptom5; }
+    public String getAdditionalSymptoms() { return additionalSymptoms; }
 
     // set methods
-    public void setCondition_name(String condition_name) { this.condition_name = condition_name; }
-    public void setSymptom_1(String symptom_1) { this.symptom_1 = symptom_1; }
-    public void setSymptom_2(String symptom_2) { this.symptom_2 = symptom_2; }
-    public void setSymptom_3(String symptom_3) { this.symptom_3 = symptom_3; }
-    public void setSymptom_4(String symptom_4) { this.symptom_4 = symptom_4; }
-    public void setSymptom_5(String symptom_5) { this.symptom_5 = symptom_5; }
-    public void setAdditional_symptoms(String additional_symptoms) { this.additional_symptoms = additional_symptoms; }
+    public void setConditionName(String conditionName) { this.conditionName = conditionName; }
+    public void setSymptom1(String symptom1) { this.symptom1 = symptom1; }
+    public void setSymptom2(String symptom2) { this.symptom2 = symptom2; }
+    public void setSymptom3(String symptom3) { this.symptom3 = symptom3; }
+    public void setSymptom4(String symptom4) { this.symptom4 = symptom4; }
+    public void setSymptom5(String symptom5) { this.symptom5 = symptom5; }
+    public void setAdditionalSymptoms(String additionalSymptoms) { this.additionalSymptoms = additionalSymptoms; }
 
 }

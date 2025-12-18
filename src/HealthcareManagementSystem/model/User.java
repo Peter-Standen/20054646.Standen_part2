@@ -4,32 +4,32 @@ import java.util.UUID;
 
 public class User {
 
-    private UUID user_number;
-    private String first_name;
-    private String last_name;
+    private UUID userNumber;
+    private String firstName;
+    private String lastName;
     private String email;
-    private String phone_number;
+    private String phoneNumber;
 
-    public User(UUID user_number, String first_name, String last_name, String email, String phone_number) {
-        this.user_number = user_number;
-        this.first_name = first_name;
-        this.last_name = last_name;
+    public User(UUID userNumber, String firstName, String lastName, String email, String phoneNumber) {
+        this.userNumber = userNumber;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.email = email;
-        this.phone_number = phone_number;
+        this.phoneNumber = phoneNumber;
     }
 
     // get methods
-    public UUID getUser_number() { return user_number; }
-    public String getFirst_name() { return first_name; }
-    public String getLast_name() { return last_name; }
+    public UUID getUserNumber() { return userNumber; }
+    public String getFirstName() { return firstName; }
+    public String getLastName() { return lastName; }
     public String getEmail() { return email; }
-    public String getPhone_number() { return phone_number; }
+    public String getPhoneNumber() { return phoneNumber; }
 
     // set methods
-    public void setUser_number(UUID user_number) { this.user_number = user_number; }
-    public void setFirst_name(String first_name) { this.first_name = first_name; }
-    public void setLast_name(String last_name) { this.last_name = last_name; }
+    public void setUserNumber(UUID userNumber) { this.userNumber = userNumber; }
+    public void setFirstName(String firstName) { this.firstName = firstName; }
+    public void setLastName(String lastName) { this.lastName = lastName; }
     public void setEmail(String email) { this.email = email; }
-    public void setPhone_number(String phone_number) { this.phone_number = phone_number; }
+    public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
 
 }
