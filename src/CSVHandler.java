@@ -70,4 +70,12 @@ public class CSVHandler {
             e.printStackTrace();
         }
     }
+
+    public static ArrayList<String[]> readRows(String filename) {
+        ArrayList<String[]> rows = new ArrayList<>();
+        for (String line : readLines(filename)) {
+            rows.add(line.split(","));
+        }
+        return rows;
+    }
 }
