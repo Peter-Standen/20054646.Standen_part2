@@ -1,14 +1,12 @@
-package HealthcareManagementSystem.view;
-
 import javax.swing.*;
 import java.awt.*;
 
-public class AdminUI extends JFrame {
+public class HMSView extends JFrame {
 
     private final JButton loadPatientsBtn = new JButton("Load Patients");
     private final JTable patientsTable = new JTable();
 
-    public AdminUI() {
+    public HMSView() {
         super("Healthcare Management System");
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
