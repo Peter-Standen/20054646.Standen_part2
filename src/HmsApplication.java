@@ -2,11 +2,7 @@ import javax.swing.SwingUtilities;
 
 public class HmsApplication {
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                initializeApplication();
-            }
-        });
+        SwingUtilities.invokeLater(HmsApplication::initializeApplication);
     }
 
     private static void initializeApplication() {

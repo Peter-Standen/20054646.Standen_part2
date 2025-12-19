@@ -1,3 +1,6 @@
+// =======================
+// File: HmsModel.java
+// =======================
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -13,7 +16,7 @@ public class HmsModel {
     private List<Patient> patients = new ArrayList<>();
     private final Queue<Referral> referralQueue = new LinkedList<>();
 
-    // ✅ Minimal addition: default constructor for HmsApplication
+    // Default constructor used by HmsApplication
     public HmsModel() {
         this(
                 new PatientCsvRepository("patients.csv"),
@@ -33,6 +36,7 @@ public class HmsModel {
         this.appointmentRepo = appointmentRepo;
     }
 
+    // Patients
     public void loadPatients() {
         patients = patientRepo.loadAll();
     }
@@ -41,6 +45,7 @@ public class HmsModel {
         return patients;
     }
 
+    // Referrals (kept, but doesn't interfere with running)
     public Referral createReferral(Referral referral) {
         referralQueue.add(referral);
         referralRepo.append(referral);

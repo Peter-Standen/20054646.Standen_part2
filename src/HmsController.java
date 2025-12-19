@@ -6,12 +6,15 @@ public class HmsController {
     public HmsController(HmsModel model, HmsView view) {
         this.model = model;
         this.view = view;
+
+        wireLoadPatients();
     }
 
-    // =========================
-    // Common accessors
-    // =========================
+    private void wireLoadPatients() {
+        view.getLoadPatientsBtn().addActionListener(e -> loadPatients());
+    }
 
+    // Common accessors
     public HmsModel getModel() {
         return model;
     }
@@ -20,23 +23,19 @@ public class HmsController {
         return view;
     }
 
-    // =========================
-    // Common lifecycle hooks
-    // =========================
-
+    // Lifecycle hook
     public void onClose() {
-        // model.saveAll();
+        // later: model.saveAll();
     }
 
-    // =========================
-    // Example domain actions
-    // =========================
-
+    // Domain action: Load Patients vertical slice
     public void loadPatients() {
-        // model.loadPatients();
+        model.loadPatients();
+        view.showPatients(model.getPatients());
     }
 
+    // Placeholder for next slice
     public void createAppointment() {
-        // model.createAppointment(...);
+        // later: model.createAppointment(...);
     }
 }
