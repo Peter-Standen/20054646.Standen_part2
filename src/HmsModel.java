@@ -55,7 +55,7 @@ public class HmsModel {
 
     private void loadPatients() {
         ArrayList<String> lines = CSVHandler.readLines(PATIENTS_FILE);
-        for (int i = 0; i < lines.size(); i++) {
+        for (int i = 1; i < lines.size(); i++) {
             Patient p = Patient.fromCSV(lines.get(i));
             patients.put(p.getPatientId(), p);
         }
