@@ -30,8 +30,7 @@ public class HmsController {
 
     // Domain action: Load Patients vertical slice
     public void loadPatients() {
-        model.loadPatients();
-        view.showPatients(model.getPatients());
+        view.showPatients(model.getAllPatients());
     }
 
     // Placeholder for next slice

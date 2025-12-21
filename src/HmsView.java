@@ -1,4 +1,3 @@
-
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -9,7 +8,10 @@ public class HmsView extends JFrame {
     private HmsController controller;
 
     private final JButton loadPatientsBtn = new JButton("Load Patients");
-    private final JTable patientsTable = new JTable();
+    private final JButton loadReferralsBtn = new JButton("Load Referrals");
+    private final JButton loadPrescriptionsBtn = new JButton("Load Prescriptions");
+
+    private final JTable mainTable = new JTable();
 
     public HmsView() {
         super("Healthcare Management System");
@@ -19,39 +21,37 @@ public class HmsView extends JFrame {
 
         JPanel top = new JPanel(new FlowLayout(FlowLayout.LEFT));
         top.add(loadPatientsBtn);
+        top.add(loadReferralsBtn);
+        top.add(loadPrescriptionsBtn);
 
         add(top, BorderLayout.NORTH);
-        add(new JScrollPane(patientsTable), BorderLayout.CENTER);
+        add(new JScrollPane(mainTable), BorderLayout.CENTER);
 
-        // initialise an empty table model so it looks sane on startup
-        patientsTable.setModel(new DefaultTableModel(
-                new Object[][] {},
-                new String[] {"First Name", "Last Name", "Email", "Phone"}
+        mainTable.setModel(new DefaultTableModel(
+                new Object[][]{},
+                new String[]{"First Name", "Last Name", "Email", "Phone"}
         ));
 
         setSize(900, 600);
         setLocationRelativeTo(null);
     }
 
-    public JButton getLoadPatientsBtn() {
-        return loadPatientsBtn;
-    }
-
-    public JTable getPatientsTable() {
-        return patientsTable;
-    }
-
     public void setController(HmsController controller) {
         this.controller = controller;
     }
 
-    // Called by controller after model loads patients
+    public JButton getLoadPatientsBtn() { return loadPatientsBtn; }
+    public JButton getLoadReferralsBtn() { return loadReferralsBtn; }
+    public JButton getLoadPrescriptionsBtn() { return loadPrescriptionsBtn; }
+
+    public JTable getMainTable() { return mainTable; }
+
     public void showPatients(List<Patient> patients) {
         String[] columns = {"First Name", "Last Name", "Email", "Phone"};
         DefaultTableModel tm = new DefaultTableModel(columns, 0);
 
         for (Patient p : patients) {
-            tm.addRow(new Object[] {
+            tm.addRow(new Object[]{
                     p.getFirstName(),
                     p.getLastName(),
                     p.getEmail(),
@@ -59,6 +59,38 @@ public class HmsView extends JFrame {
             });
         }
 
-        patientsTable.setModel(tm);
+        mainTable.setModel(tm);
+    }
+
+    public void showReferrals(List<Referral> referrals) {
+        String[] columns = {"Referral ID", "Patient ID", "Status", "Urgency"};
+        DefaultTableModel tm = new DefaultTableModel(columns, 0);
+
+        for (Referral r : referrals) {
+            tm.addRow(new Object[]{
+                    r.getReferralId(),
+                    r.getPatientId(),
+                    r.getStatus(),
+                    r.getUrgencyLevel()
+            });
+        }
+
+        mainTable.setModel(tm);
+    }
+
+    public void showPrescriptions(List<Prescription> prescriptions) {
+        String[] columns = {"Prescription ID", "Medication", "Status", "Pharmacy"};
+        DefaultTableModel tm = new DefaultTableModel(columns, 0);
+
+        for (Prescription p : prescriptions) {
+            tm.addRow(new Object[]{
+                    p.getPrescriptionId(),
+                    p.getMedicationName(),
+                    p.getPrescriptionStatus(),
+                    p.getPharmacyName()
+            });
+        }
+
+        mainTable.setModel(tm);
     }
 }
