@@ -1,40 +1,136 @@
-public class HmsController {
+import java.util.ArrayList;
 
-    private final HmsModel model;
-    private final HmsView view;
+/**
+ * Controller class that coordinates between Model and View
+ */
+public class HmsController {
+    private HmsModel model;
+    private HmsView view;
 
     public HmsController(HmsModel model, HmsView view) {
         this.model = model;
         this.view = view;
 
-        wireLoadPatients();
+        initializeView();
     }
 
-    private void wireLoadPatients() {
-        view.getLoadPatientsBtn().addActionListener(e -> loadPatients());
+    private void initializeView() {
+
+        // Role selection
+        view.setSelectRoleListener(new SelectRoleListener() {
+            public void onSelectRole(String roleName) {
+                handleSelectRole(roleName);
+            }
+        });
+
+        // Back navigation (role screens -> role select)
+        view.setBackToRoleSelectListener(new BackToRoleSelectListener() {
+            public void onBack() {
+                view.showRoleSelectView();
+            }
+        });
+
+        // Data loading actions
+        view.setLoadPatientsListener(new LoadPatientsListener() {
+            public void onLoadPatients() {
+                handleLoadPatients();
+            }
+        });
+
+        view.setLoadReferralsListener(new LoadReferralsListener() {
+            public void onLoadReferrals() {
+                handleLoadReferrals();
+            }
+        });
+
+        view.setLoadPrescriptionsListener(new LoadPrescriptionsListener() {
+            public void onLoadPrescriptions() {
+                handleLoadPrescriptions();
+            }
+        });
+
+        // Close hook
+        view.setOnCloseListener(new OnCloseListener() {
+            public void onClose() {
+                handleSaveData();
+            }
+        });
     }
 
-    // Common accessors
-    public HmsModel getModel() {
-        return model;
+    // ========== Role Navigation ==========
+
+    private void handleSelectRole(String roleName) {
+        if ("ADMIN".equals(roleName)) {
+            view.showAdminView();
+        } else if ("CONSULTANT".equals(roleName)) {
+            view.showConsultantView();
+        } else if ("PATIENT".equals(roleName)) {
+            view.showPatientView();
+        } else {
+            view.showRoleSelectView();
+        }
     }
 
-    public HmsView getView() {
-        return view;
+    // ========== Load / Show Data ==========
+
+    private void handleLoadPatients() {
+        ArrayList<Patient> patients = model.getAllPatients();
+        view.showPatients(patients);
     }
 
-    // Lifecycle hook
-    public void onClose() {
-        // later: model.saveAll();
+    private void handleLoadReferrals() {
+        ArrayList<Referral> referrals = model.getAllReferrals();
+        view.showReferrals(referrals);
     }
 
-    // Domain action: Load Patients vertical slice
-    public void loadPatients() {
-        view.showPatients(model.getAllPatients());
+    private void handleLoadPrescriptions() {
+        ArrayList<Prescription> prescriptions = model.getAllPrescriptions();
+        view.showPrescriptions(prescriptions);
     }
 
-    // Placeholder for next slice
-    public void createAppointment() {
-        // later: model.createAppointment(...);
+    // ========== Data Persistence ==========
+
+    private void handleSaveData() {
+        model.saveAllData();
     }
+
+    // ========== Data Access Methods for View (bookshop pattern) ==========
+
+    public ArrayList<Patient> getAllPatients() {
+        return model.getAllPatients();
+    }
+
+    public ArrayList<Referral> getAllReferrals() {
+        return model.getAllReferrals();
+    }
+
+    public ArrayList<Prescription> getAllPrescriptions() {
+        return model.getAllPrescriptions();
+    }
+}
+
+/* ===== Listener Interfaces (same pattern as bookshop controller) ===== */
+
+interface SelectRoleListener {
+    void onSelectRole(String roleName);
+}
+
+interface BackToRoleSelectListener {
+    void onBack();
+}
+
+interface LoadPatientsListener {
+    void onLoadPatients();
+}
+
+interface LoadReferralsListener {
+    void onLoadReferrals();
+}
+
+interface LoadPrescriptionsListener {
+    void onLoadPrescriptions();
+}
+
+interface OnCloseListener {
+    void onClose();
 }
