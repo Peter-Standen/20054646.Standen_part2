@@ -31,4 +31,12 @@ public class CSVHandler {
             e.printStackTrace();
         }
     }
+
+    public static void appendLine(String path, String line) {
+        try (PrintWriter pw = new PrintWriter(new FileWriter(path, true))) { // append = true
+            pw.println(line);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

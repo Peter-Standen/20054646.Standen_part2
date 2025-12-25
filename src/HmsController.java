@@ -2,8 +2,10 @@ import java.util.ArrayList;
 
 /**
  * Controller class that coordinates between Model and View
+ *
  */
 public class HmsController {
+
     private HmsModel model;
     private HmsView view;
 
@@ -12,52 +14,75 @@ public class HmsController {
         this.view = view;
 
         initializeView();
+        setupEventListeners();
     }
 
     private void initializeView() {
+        view.showRoleSelectView();
+    }
 
-        // Role selection
+    private void setupEventListeners() {
+
         view.setSelectRoleListener(new SelectRoleListener() {
             public void onSelectRole(String roleName) {
                 handleSelectRole(roleName);
             }
         });
 
-        // Back navigation (role screens -> role select)
         view.setBackToRoleSelectListener(new BackToRoleSelectListener() {
             public void onBack() {
                 view.showRoleSelectView();
             }
         });
 
-        // Data loading actions
-        view.setLoadPatientsListener(new LoadPatientsListener() {
-            public void onLoadPatients() {
+        view.setLoadPatientsListener(new Runnable() {
+            public void run() {
                 handleLoadPatients();
             }
         });
 
-        view.setLoadReferralsListener(new LoadReferralsListener() {
-            public void onLoadReferrals() {
+        view.setLoadReferralsListener(new Runnable() {
+            public void run() {
                 handleLoadReferrals();
             }
         });
 
-        view.setLoadPrescriptionsListener(new LoadPrescriptionsListener() {
-            public void onLoadPrescriptions() {
+        view.setLoadPrescriptionsListener(new Runnable() {
+            public void run() {
                 handleLoadPrescriptions();
             }
         });
 
-        // Close hook
-        view.setOnCloseListener(new OnCloseListener() {
-            public void onClose() {
+        view.setLoadAppointmentsListener(new Runnable() {
+            public void run() {
+                handleLoadAppointments();
+            }
+        });
+
+        view.setCreateReferralListener(new Runnable() {
+            public void run() {
+                handleCreateReferral();
+            }
+        });
+
+        view.setCreatePrescriptionListener(new Runnable() {
+            public void run() {
+                handleCreatePrescription();
+            }
+        });
+
+        view.setCreateAppointmentListener(new Runnable() {
+            public void run() {
+                handleCreateAppointment();
+            }
+        });
+
+        view.setOnCloseListener(new Runnable() {
+            public void run() {
                 handleSaveData();
             }
         });
     }
-
-    // ========== Role Navigation ==========
 
     private void handleSelectRole(String roleName) {
         if ("ADMIN".equals(roleName)) {
@@ -71,45 +96,121 @@ public class HmsController {
         }
     }
 
-    // ========== Load / Show Data ==========
-
     private void handleLoadPatients() {
-        ArrayList<Patient> patients = model.getAllPatients();
-        view.showPatients(patients);
+        view.showPatients(model.getAllPatients());
     }
 
     private void handleLoadReferrals() {
-        ArrayList<Referral> referrals = model.getAllReferrals();
-        view.showReferrals(referrals);
+        view.showReferrals(model.getAllReferrals());
     }
 
     private void handleLoadPrescriptions() {
-        ArrayList<Prescription> prescriptions = model.getAllPrescriptions();
-        view.showPrescriptions(prescriptions);
+        view.showPrescriptions(model.getAllPrescriptions());
     }
 
-    // ========== Data Persistence ==========
+    private void handleLoadAppointments() {
+        view.showAppointments(model.getAllAppointments());
+    }
+
+    private void handleCreateReferral() {
+        ReferralInput in = view.promptForReferral();
+        if (in == null) return;
+
+        String referralId = model.generateReferralId();
+        String patientId = in.patientId;
+
+        String referringClinicianId = "C1";
+        String referredToClinicianId = "";
+
+        String referringFacilityId = "";
+        String referredToFacilityId = in.facilityId;
+
+        java.util.Date now = new java.util.Date();
+
+        Integer urgencyLevel = parseUrgency(in.urgency);
+        String referralReason = "General Referral";
+        String clinicalSummary = in.summary;
+        String requestedInvestigations = "";
+        String status = "NEW";
+
+        String appointmentId = "";
+        String notes = "";
+
+        java.util.Date createdDate = now;
+        java.util.Date lastUpdated = now;
+
+        CommunicationMethod communicationMethod = null;
+
+        Referral r = new Referral(
+                referralId,
+                patientId,
+                referringClinicianId,
+                referredToClinicianId,
+                referringFacilityId,
+                referredToFacilityId,
+                now,
+                urgencyLevel,
+                referralReason,
+                clinicalSummary,
+                requestedInvestigations,
+                status,
+                appointmentId,
+                notes,
+                createdDate,
+                lastUpdated,
+                communicationMethod
+        );
+
+        model.addReferral(r);
+        view.showReferrals(model.getAllReferrals());
+    }
+
+    private void handleCreatePrescription() {
+        PrescriptionInput in = view.promptForPrescription();
+        if (in == null) return;
+
+        String prescriptionId = model.generatePrescriptionId();
+
+        // Creation using fromCSV
+        String line = prescriptionId + "," + in.patientId + "," + in.medicationName + "," + in.status + "," + in.pharmacyName;
+        Prescription p = Prescription.fromCSV(line);
+
+        model.addPrescription(p);
+        view.showPrescriptions(model.getAllPrescriptions());
+    }
+
+    private void handleCreateAppointment() {
+        AppointmentInput in = view.promptForAppointment();
+        if (in == null) return;
+
+        String appointmentId = model.generateAppointmentId();
+        String clinicianId = (in.clinicianId == null || in.clinicianId.trim().isEmpty()) ? "C1" : in.clinicianId.trim();
+
+        // Creation using fromCSV
+        String line = appointmentId + "," + in.patientId + "," + clinicianId + "," + in.date + "," + "BOOKED";
+        Appointment a = Appointment.fromCSV(line);
+
+        model.addAppointment(a);
+        view.showAppointments(model.getAllAppointments());
+    }
+
+    private Integer parseUrgency(String s) {
+        if (s == null) return 1;
+
+        String x = s.trim().toLowerCase();
+        if ("high".equals(x) || "3".equals(x)) return 3;
+        if ("medium".equals(x) || "2".equals(x)) return 2;
+        if ("low".equals(x) || "1".equals(x)) return 1;
+
+        return 1;
+    }
 
     private void handleSaveData() {
         model.saveAllData();
     }
-
-    // ========== Data Access Methods for View (bookshop pattern) ==========
-
-    public ArrayList<Patient> getAllPatients() {
-        return model.getAllPatients();
-    }
-
-    public ArrayList<Referral> getAllReferrals() {
-        return model.getAllReferrals();
-    }
-
-    public ArrayList<Prescription> getAllPrescriptions() {
-        return model.getAllPrescriptions();
-    }
 }
 
-/* ===== Listener Interfaces (same pattern as bookshop controller) ===== */
+/* ===== Listener Interfaces ===== */
 
 interface SelectRoleListener {
     void onSelectRole(String roleName);
@@ -117,20 +218,4 @@ interface SelectRoleListener {
 
 interface BackToRoleSelectListener {
     void onBack();
-}
-
-interface LoadPatientsListener {
-    void onLoadPatients();
-}
-
-interface LoadReferralsListener {
-    void onLoadReferrals();
-}
-
-interface LoadPrescriptionsListener {
-    void onLoadPrescriptions();
-}
-
-interface OnCloseListener {
-    void onClose();
 }

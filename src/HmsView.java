@@ -4,45 +4,48 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.List;
 
-/**
- * View class for the Healthcare Management System
- * Handles all GUI components and user interface
- */
 public class HmsView extends JFrame {
+
     private HmsController controller;
 
-    // Listener fields (bookshop-style)
     private SelectRoleListener selectRoleListener;
     private BackToRoleSelectListener backToRoleSelectListener;
-    private LoadPatientsListener loadPatientsListener;
-    private LoadReferralsListener loadReferralsListener;
-    private LoadPrescriptionsListener loadPrescriptionsListener;
-    private OnCloseListener onCloseListener;
 
-    // Cards for role-based views
+    private Runnable loadPatientsListener;
+    private Runnable loadReferralsListener;
+    private Runnable loadPrescriptionsListener;
+    private Runnable loadAppointmentsListener;
+
+    private Runnable createReferralListener;
+    private Runnable createPrescriptionListener;
+    private Runnable createAppointmentListener;
+
+    private Runnable onCloseListener;
+
     private CardLayout cardLayout;
     private JPanel cards;
 
-    // Shared table
     private JTable mainTable;
 
-    // Role select screen buttons
     private JButton adminRoleBtn;
     private JButton consultantRoleBtn;
     private JButton patientRoleBtn;
 
-    // Admin buttons
     private JButton adminLoadPatientsBtn;
     private JButton adminLoadReferralsBtn;
     private JButton adminLoadPrescriptionsBtn;
+    private JButton adminLoadAppointmentsBtn;
+    private JButton adminCreateAppointmentBtn;
     private JButton adminBackBtn;
 
-    // Consultant buttons
     private JButton consultantLoadReferralsBtn;
+    private JButton consultantCreateReferralBtn;
+    private JButton consultantCreatePrescriptionBtn;
     private JButton consultantBackBtn;
 
-    // Patient buttons
     private JButton patientLoadPrescriptionsBtn;
+    private JButton patientLoadAppointmentsBtn;
+    private JButton patientCreateAppointmentBtn;
     private JButton patientBackBtn;
 
     public HmsView() {
@@ -57,7 +60,6 @@ public class HmsView extends JFrame {
 
     public void setController(HmsController controller) {
         this.controller = controller;
-        // Bookshop pattern: view does initial setup once controller exists
         showRoleSelectView();
     }
 
@@ -67,7 +69,6 @@ public class HmsView extends JFrame {
         cardLayout = new CardLayout();
         cards = new JPanel(cardLayout);
 
-        // Build screens
         JPanel roleSelectPanel = buildRoleSelectPanel();
         JPanel adminPanel = buildAdminPanel();
         JPanel consultantPanel = buildConsultantPanel();
@@ -80,11 +81,9 @@ public class HmsView extends JFrame {
 
         add(cards, BorderLayout.NORTH);
 
-        // Shared table in center
         mainTable = new JTable();
         add(new JScrollPane(mainTable), BorderLayout.CENTER);
 
-        // Start with empty model
         mainTable.setModel(new DefaultTableModel(new Object[][]{}, new String[]{}));
     }
 
@@ -101,23 +100,9 @@ public class HmsView extends JFrame {
         p.add(consultantRoleBtn);
         p.add(patientRoleBtn);
 
-        adminRoleBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                if (selectRoleListener != null) selectRoleListener.onSelectRole("ADMIN");
-            }
-        });
-
-        consultantRoleBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                if (selectRoleListener != null) selectRoleListener.onSelectRole("CONSULTANT");
-            }
-        });
-
-        patientRoleBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                if (selectRoleListener != null) selectRoleListener.onSelectRole("PATIENT");
-            }
-        });
+        adminRoleBtn.addActionListener(e -> { if (selectRoleListener != null) selectRoleListener.onSelectRole("ADMIN"); });
+        consultantRoleBtn.addActionListener(e -> { if (selectRoleListener != null) selectRoleListener.onSelectRole("CONSULTANT"); });
+        patientRoleBtn.addActionListener(e -> { if (selectRoleListener != null) selectRoleListener.onSelectRole("PATIENT"); });
 
         return p;
     }
@@ -130,36 +115,23 @@ public class HmsView extends JFrame {
         adminLoadPatientsBtn = new JButton("Load Patients");
         adminLoadReferralsBtn = new JButton("Load Referrals");
         adminLoadPrescriptionsBtn = new JButton("Load Prescriptions");
+        adminLoadAppointmentsBtn = new JButton("Load Appointments");
+        adminCreateAppointmentBtn = new JButton("Create Appointment");
         adminBackBtn = new JButton("Back");
 
         p.add(adminLoadPatientsBtn);
         p.add(adminLoadReferralsBtn);
         p.add(adminLoadPrescriptionsBtn);
+        p.add(adminLoadAppointmentsBtn);
+        p.add(adminCreateAppointmentBtn);
         p.add(adminBackBtn);
 
-        adminLoadPatientsBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                if (loadPatientsListener != null) loadPatientsListener.onLoadPatients();
-            }
-        });
-
-        adminLoadReferralsBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                if (loadReferralsListener != null) loadReferralsListener.onLoadReferrals();
-            }
-        });
-
-        adminLoadPrescriptionsBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                if (loadPrescriptionsListener != null) loadPrescriptionsListener.onLoadPrescriptions();
-            }
-        });
-
-        adminBackBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                if (backToRoleSelectListener != null) backToRoleSelectListener.onBack();
-            }
-        });
+        adminLoadPatientsBtn.addActionListener(e -> { if (loadPatientsListener != null) loadPatientsListener.run(); });
+        adminLoadReferralsBtn.addActionListener(e -> { if (loadReferralsListener != null) loadReferralsListener.run(); });
+        adminLoadPrescriptionsBtn.addActionListener(e -> { if (loadPrescriptionsListener != null) loadPrescriptionsListener.run(); });
+        adminLoadAppointmentsBtn.addActionListener(e -> { if (loadAppointmentsListener != null) loadAppointmentsListener.run(); });
+        adminCreateAppointmentBtn.addActionListener(e -> { if (createAppointmentListener != null) createAppointmentListener.run(); });
+        adminBackBtn.addActionListener(e -> { if (backToRoleSelectListener != null) backToRoleSelectListener.onBack(); });
 
         return p;
     }
@@ -170,22 +142,19 @@ public class HmsView extends JFrame {
         p.add(new JLabel("Consultant View"));
 
         consultantLoadReferralsBtn = new JButton("Load Referrals");
+        consultantCreateReferralBtn = new JButton("Create Referral");
+        consultantCreatePrescriptionBtn = new JButton("Create Prescription");
         consultantBackBtn = new JButton("Back");
 
         p.add(consultantLoadReferralsBtn);
+        p.add(consultantCreateReferralBtn);
+        p.add(consultantCreatePrescriptionBtn);
         p.add(consultantBackBtn);
 
-        consultantLoadReferralsBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                if (loadReferralsListener != null) loadReferralsListener.onLoadReferrals();
-            }
-        });
-
-        consultantBackBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                if (backToRoleSelectListener != null) backToRoleSelectListener.onBack();
-            }
-        });
+        consultantLoadReferralsBtn.addActionListener(e -> { if (loadReferralsListener != null) loadReferralsListener.run(); });
+        consultantCreateReferralBtn.addActionListener(e -> { if (createReferralListener != null) createReferralListener.run(); });
+        consultantCreatePrescriptionBtn.addActionListener(e -> { if (createPrescriptionListener != null) createPrescriptionListener.run(); });
+        consultantBackBtn.addActionListener(e -> { if (backToRoleSelectListener != null) backToRoleSelectListener.onBack(); });
 
         return p;
     }
@@ -196,22 +165,19 @@ public class HmsView extends JFrame {
         p.add(new JLabel("Patient View"));
 
         patientLoadPrescriptionsBtn = new JButton("Load Prescriptions");
+        patientLoadAppointmentsBtn = new JButton("Load Appointments");
+        patientCreateAppointmentBtn = new JButton("Create Appointment");
         patientBackBtn = new JButton("Back");
 
         p.add(patientLoadPrescriptionsBtn);
+        p.add(patientLoadAppointmentsBtn);
+        p.add(patientCreateAppointmentBtn);
         p.add(patientBackBtn);
 
-        patientLoadPrescriptionsBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                if (loadPrescriptionsListener != null) loadPrescriptionsListener.onLoadPrescriptions();
-            }
-        });
-
-        patientBackBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                if (backToRoleSelectListener != null) backToRoleSelectListener.onBack();
-            }
-        });
+        patientLoadPrescriptionsBtn.addActionListener(e -> { if (loadPrescriptionsListener != null) loadPrescriptionsListener.run(); });
+        patientLoadAppointmentsBtn.addActionListener(e -> { if (loadAppointmentsListener != null) loadAppointmentsListener.run(); });
+        patientCreateAppointmentBtn.addActionListener(e -> { if (createAppointmentListener != null) createAppointmentListener.run(); });
+        patientBackBtn.addActionListener(e -> { if (backToRoleSelectListener != null) backToRoleSelectListener.onBack(); });
 
         return p;
     }
@@ -219,71 +185,62 @@ public class HmsView extends JFrame {
     private void wireWindowClose() {
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
-                if (onCloseListener != null) onCloseListener.onClose();
+                if (onCloseListener != null) onCloseListener.run();
                 System.exit(0);
             }
         });
     }
 
-    // ===== Card switching (called by controller) =====
+    public void showRoleSelectView() { cardLayout.show(cards, "ROLE_SELECT"); }
+    public void showAdminView() { cardLayout.show(cards, "ADMIN"); }
+    public void showConsultantView() { cardLayout.show(cards, "CONSULTANT"); }
+    public void showPatientView() { cardLayout.show(cards, "PATIENT"); }
 
-    public void showRoleSelectView() {
-        cardLayout.show(cards, "ROLE_SELECT");
-    }
+    public void setSelectRoleListener(SelectRoleListener l) { this.selectRoleListener = l; }
+    public void setBackToRoleSelectListener(BackToRoleSelectListener l) { this.backToRoleSelectListener = l; }
 
-    public void showAdminView() {
-        cardLayout.show(cards, "ADMIN");
-    }
+    public void setLoadPatientsListener(Runnable l) { this.loadPatientsListener = l; }
+    public void setLoadReferralsListener(Runnable l) { this.loadReferralsListener = l; }
+    public void setLoadPrescriptionsListener(Runnable l) { this.loadPrescriptionsListener = l; }
+    public void setLoadAppointmentsListener(Runnable l) { this.loadAppointmentsListener = l; }
 
-    public void showConsultantView() {
-        cardLayout.show(cards, "CONSULTANT");
-    }
+    public void setCreateReferralListener(Runnable l) { this.createReferralListener = l; }
+    public void setCreatePrescriptionListener(Runnable l) { this.createPrescriptionListener = l; }
+    public void setCreateAppointmentListener(Runnable l) { this.createAppointmentListener = l; }
 
-    public void showPatientView() {
-        cardLayout.show(cards, "PATIENT");
-    }
+    public void setOnCloseListener(Runnable l) { this.onCloseListener = l; }
 
-    // ===== Listener setters (bookshop style) =====
-
-    public void setSelectRoleListener(SelectRoleListener l) {
-        this.selectRoleListener = l;
-    }
-
-    public void setBackToRoleSelectListener(BackToRoleSelectListener l) {
-        this.backToRoleSelectListener = l;
-    }
-
-    public void setLoadPatientsListener(LoadPatientsListener l) {
-        this.loadPatientsListener = l;
-    }
-
-    public void setLoadReferralsListener(LoadReferralsListener l) {
-        this.loadReferralsListener = l;
-    }
-
-    public void setLoadPrescriptionsListener(LoadPrescriptionsListener l) {
-        this.loadPrescriptionsListener = l;
-    }
-
-    public void setOnCloseListener(OnCloseListener l) {
-        this.onCloseListener = l;
-    }
-
-    // ===== Table display methods (same pattern as bookshop tables) =====
+    // 4 columns per table (basic + consistent)
 
     public void showPatients(List<Patient> patients) {
-        String[] columns = {"First Name", "Last Name", "Email", "Phone"};
+
+        String[] columns = {
+                "Patient ID", "First Name", "Last Name", "DOB", "NHS No", "Gender",
+                "Phone", "Email", "Address", "Postcode",
+                "Emergency Name", "Emergency Phone", "Registration Date", "GP Surgery ID"
+        };
+
         DefaultTableModel tm = new DefaultTableModel(columns, 0);
 
         for (int i = 0; i < patients.size(); i++) {
             Patient p = patients.get(i);
-            Object[] row = {
+
+            tm.addRow(new Object[] {
+                    p.getPatientId(),
                     p.getFirstName(),
                     p.getLastName(),
+                    p.getDateOfBirth(),
+                    p.getNhsNumber(),
+                    p.getGender(),
+                    p.getPhoneNumber(),
                     p.getEmail(),
-                    p.getPhoneNumber()
-            };
-            tm.addRow(row);
+                    p.getAddress(),
+                    p.getPostcode(),
+                    p.getEmergencyContactName(),
+                    p.getEmergencyContactPhone(),
+                    p.getRegistrationDate(),
+                    p.getGpSurgeryId()
+            });
         }
 
         mainTable.setModel(tm);
@@ -295,13 +252,7 @@ public class HmsView extends JFrame {
 
         for (int i = 0; i < referrals.size(); i++) {
             Referral r = referrals.get(i);
-            Object[] row = {
-                    r.getReferralId(),
-                    r.getPatientId(),
-                    r.getStatus(),
-                    r.getUrgencyLevel()
-            };
-            tm.addRow(row);
+            tm.addRow(new Object[]{ r.getReferralId(), r.getPatientId(), r.getStatus(), r.getUrgencyLevel() });
         }
 
         mainTable.setModel(tm);
@@ -313,15 +264,107 @@ public class HmsView extends JFrame {
 
         for (int i = 0; i < prescriptions.size(); i++) {
             Prescription p = prescriptions.get(i);
-            Object[] row = {
-                    p.getPrescriptionId(),
-                    p.getMedicationName(),
-                    p.getPrescriptionStatus(),
-                    p.getPharmacyName()
-            };
-            tm.addRow(row);
+            tm.addRow(new Object[]{ p.getPrescriptionId(), p.getMedicationName(), p.getPrescriptionStatus(), p.getPharmacyName() });
         }
 
         mainTable.setModel(tm);
+    }
+
+    public void showAppointments(List<Appointment> appointments) {
+        String[] columns = {"Appointment ID", "Patient ID", "Date", "Status"};
+        DefaultTableModel tm = new DefaultTableModel(columns, 0);
+
+        for (int i = 0; i < appointments.size(); i++) {
+            Appointment a = appointments.get(i);
+            tm.addRow(new Object[]{ a.getAppointmentId(), a.getPatientId(), a.getAppointmentDate(), a.getStatus() });
+        }
+
+        mainTable.setModel(tm);
+    }
+
+    public ReferralInput promptForReferral() {
+        String patientId = JOptionPane.showInputDialog(this, "Enter Patient ID (e.g. P001):");
+        if (patientId == null) return null;
+
+        String facilityId = JOptionPane.showInputDialog(this, "Enter Facility ID (e.g. F001):");
+        if (facilityId == null) return null;
+
+        String urgency = JOptionPane.showInputDialog(this, "Enter Urgency (Low/Medium/High):");
+        if (urgency == null) return null;
+
+        String summary = JOptionPane.showInputDialog(this, "Enter Clinical Summary:");
+        if (summary == null) return null;
+
+        return new ReferralInput(patientId.trim(), facilityId.trim(), urgency.trim(), summary.trim());
+    }
+
+    public PrescriptionInput promptForPrescription() {
+        String patientId = JOptionPane.showInputDialog(this, "Enter Patient ID (e.g. P001):");
+        if (patientId == null) return null;
+
+        String medicationName = JOptionPane.showInputDialog(this, "Enter Medication Name:");
+        if (medicationName == null) return null;
+
+        String pharmacyName = JOptionPane.showInputDialog(this, "Enter Pharmacy Name:");
+        if (pharmacyName == null) return null;
+
+        String status = JOptionPane.showInputDialog(this, "Enter Status (e.g. NEW/ISSUED):");
+        if (status == null) return null;
+        if (status.trim().isEmpty()) status = "NEW";
+
+        return new PrescriptionInput(patientId.trim(), medicationName.trim(), pharmacyName.trim(), status.trim());
+    }
+
+    public AppointmentInput promptForAppointment() {
+        String patientId = JOptionPane.showInputDialog(this, "Enter Patient ID (e.g. P001):");
+        if (patientId == null) return null;
+
+        String clinicianId = JOptionPane.showInputDialog(this, "Enter Clinician ID (optional, e.g. C001):");
+        if (clinicianId == null) clinicianId = "";
+
+        String date = JOptionPane.showInputDialog(this, "Enter Appointment Date (e.g. 2025-12-22):");
+        if (date == null) return null;
+
+        return new AppointmentInput(patientId.trim(), clinicianId.trim(), date.trim());
+    }
+}
+
+class ReferralInput {
+    public String patientId;
+    public String facilityId;
+    public String urgency;
+    public String summary;
+
+    public ReferralInput(String patientId, String facilityId, String urgency, String summary) {
+        this.patientId = patientId;
+        this.facilityId = facilityId;
+        this.urgency = urgency;
+        this.summary = summary;
+    }
+}
+
+class PrescriptionInput {
+    public String patientId;
+    public String medicationName;
+    public String pharmacyName;
+    public String status;
+
+    public PrescriptionInput(String patientId, String medicationName, String pharmacyName, String status) {
+        this.patientId = patientId;
+        this.medicationName = medicationName;
+        this.pharmacyName = pharmacyName;
+        this.status = status;
+    }
+}
+
+class AppointmentInput {
+    public String patientId;
+    public String clinicianId;
+    public String date;
+
+    public AppointmentInput(String patientId, String clinicianId, String date) {
+        this.patientId = patientId;
+        this.clinicianId = clinicianId;
+        this.date = date;
     }
 }
