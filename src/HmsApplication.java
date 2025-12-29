@@ -1,20 +1,20 @@
 import javax.swing.SwingUtilities;
 
 /**
- * Entry point for the Healthcare Management System.
- * Mirrors the structure used in the Bookshop example (MVC wiring + console banners).
+ * Main Application class for the Healthcare Management System
+ * Initializes and wires together the Model, View, and Controller components
  */
 public class HmsApplication {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                initializeApplication();
+                initialiseApplication();
             }
         });
     }
 
-    private static void initializeApplication() {
+    private static void initialiseApplication() {
         System.out.println("Healthcare Management System Starting...");
 
         // Create the Model
@@ -39,6 +39,7 @@ public class HmsApplication {
         System.out.println("=====================================");
         System.out.println("Healthcare Management System started!");
         System.out.println("Architecture: MVC Pattern");
+        System.out.println("Referral Management: Singleton Pattern");
         System.out.println("=====================================");
     }
 }

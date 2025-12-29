@@ -1,13 +1,8 @@
 import javax.swing.JOptionPane;
 import java.util.Date;
-import java.util.List;
 
 /**
- * Main Controller class for the Healthcare Management System.
- * Mirrors the Bookshop example:
- * - Wires View listeners
- * - Calls Model to load/save/update
- * - Instructs View what to show
+ * Main Controller class that coordinates between Model and View
  */
 public class HmsController {
 
@@ -20,15 +15,10 @@ public class HmsController {
 
         // Role selection / navigation
         view.setSelectRoleListener(new SelectRoleListener() {
-            public void onSelectRole(String role) {
-                handleSelectRole(role);
-            }
+            public void onSelectRole(String role) { handleSelectRole(role); }
         });
-
         view.setBackToRoleSelectListener(new BackToRoleSelectListener() {
-            public void onBack() {
-                view.showRoleSelectView();
-            }
+            public void onBack() { view.showRoleSelectView(); }
         });
 
         // Admin load buttons
@@ -56,9 +46,14 @@ public class HmsController {
             public void run() { handleCreateAppointment(); }
         });
 
-        // Edit referral (admin)
+        // Edit referral (admin and consultant)
         view.setEditReferralListener(new Runnable() {
             public void run() { handleEditReferral(); }
+        });
+
+        // Edit prescription (admin and consultant)
+        view.setEditPrescriptionListener(new Runnable() {
+            public void run() { handleEditPrescription(); }
         });
 
         // Print selected to file (consultant)
@@ -75,6 +70,8 @@ public class HmsController {
         });
     }
 
+    // ========== Role Selection Navigation Handlers ==========
+
     private void handleSelectRole(String role) {
         if ("ADMIN".equals(role)) {
             view.showAdminView();
@@ -87,24 +84,16 @@ public class HmsController {
         }
     }
 
+    // ========== Patient Management Handlers ==========
+
     private void handleLoadPatients() {
-        List<Patient> list = model.getAllPatients();
-        view.showPatients(list);
+        view.showPatients(model.getAllPatients());
     }
+
+    // ========== Referral Management Handlers ==========
 
     private void handleLoadReferrals() {
-        List<Referral> list = model.getAllReferrals();
-        view.showReferrals(list);
-    }
-
-    private void handleLoadPrescriptions() {
-        List<Prescription> list = model.getAllPrescriptions();
-        view.showPrescriptions(list);
-    }
-
-    private void handleLoadAppointments() {
-        List<Appointment> list = model.getAllAppointments();
-        view.showAppointments(list);
+        view.showReferrals(model.getAllReferrals());
     }
 
     private void handleCreateReferral() {
@@ -117,29 +106,77 @@ public class HmsController {
 
         String referralId = model.generateReferralId();
 
-        // Build a Referral with the info we have (remaining fields defaulted)
-        Referral r = new Referral(
+        Referral referral = new Referral(
                 referralId,
                 input.patientId,
-                "",                 // referringClinicianId
-                "",                 // referredToClinicianId
-                input.facilityId,   // referringFacilityId
-                "",                 // referredToFacilityId
-                new Date(),         // referralDate
+                "",
+                "",
+                input.facilityId,
+                "",
+                new Date(),
                 urgency,
-                "",                 // referralReason
+                "",
                 input.summary,
-                "",                 // requestedInvestigations
-                "In Progress",      // status
-                "",                 // appointmentId
-                "",                 // notes
-                new Date(),         // createdDate
-                new Date(),         // lastUpdated
-                null                // communicationMethod
+                "",
+                "In Progress",
+                "",
+                "",
+                new Date(),
+                new Date(),
+                null
         );
 
-        model.addReferral(r);
+        model.addReferral(referral);
         handleLoadReferrals();
+    }
+
+    private void handleEditReferral() {
+        if (view.getTableColumnCount() == 0 || !"Referral ID".equals(view.getTableColumnName(0))) {
+            JOptionPane.showMessageDialog(view, "Please load referrals first, then select a referral row.");
+            return;
+        }
+
+        String referralId = view.getSelectedIdFromTable(0);
+        if (referralId == null || referralId.trim().isEmpty()) return;
+
+        Referral referral = model.getReferralById(referralId);
+        if (referral == null) {
+            JOptionPane.showMessageDialog(view, "Referral not found: " + referralId);
+            return;
+        }
+
+        String newStatus = JOptionPane.showInputDialog(
+                view,
+                "Enter new status for Referral " + referralId + ":",
+                referral.getStatus()
+        );
+        if (newStatus == null) return;
+
+        referral.setStatus(newStatus.trim());
+        referral.setLastUpdated(new Date());
+
+        model.updateReferral(referral);
+        handleLoadReferrals();
+    }
+
+    private void handlePrintSelectedReferral() {
+        String referralId = view.getSelectedIdFromTable(0);
+        if (referralId == null || referralId.trim().isEmpty()) return;
+
+        Referral referral = model.getReferralById(referralId);
+        if (referral == null) {
+            JOptionPane.showMessageDialog(view, "Referral not found: " + referralId);
+            return;
+        }
+
+        model.printReferralToFile(referral);
+        JOptionPane.showMessageDialog(view, "Referral written to file.");
+    }
+
+    // ========== Prescription Management Handlers ==========
+
+    private void handleLoadPrescriptions() {
+        view.showPrescriptions(model.getAllPrescriptions());
     }
 
     private void handleCreatePrescription() {
@@ -148,31 +185,96 @@ public class HmsController {
 
         String prescriptionId = model.generatePrescriptionId();
 
-        Prescription p = Prescription.fromCSV(
+        Prescription prescription = Prescription.fromCSV(
                 prescriptionId + "," +
                         input.patientId + "," +
-                        "," +                  // clinicianId
-                        "," +                  // appointmentId
-                        "," +                  // prescriptionDate
+                        "," +
+                        "," +
+                        "," +
                         input.medicationName + "," +
-                        "," +                  // dosage
-                        "," +                  // frequency
-                        "," +                  // durationDays
-                        "," +                  // quantity
-                        "," +                  // instructions
+                        "," +
+                        "," +
+                        "," +
+                        "," +
+                        "," +
                         input.pharmacyName + "," +
                         input.status + "," +
-                        "," +                  // issueDate
-                        ""                     // collectionDate
+                        "," +
+                        ""
         );
 
-        if (p == null) {
+        if (prescription == null) {
             JOptionPane.showMessageDialog(view, "Could not create prescription (invalid input).");
             return;
         }
 
-        model.addPrescription(p);
+        model.addPrescription(prescription);
         handleLoadPrescriptions();
+    }
+
+    private void handleEditPrescription() {
+        if (view.getTableColumnCount() == 0 || !"Prescription ID".equals(view.getTableColumnName(0))) {
+            JOptionPane.showMessageDialog(view, "Please load prescriptions first, then select a prescription row.");
+            return;
+        }
+
+        String prescriptionId = view.getSelectedIdFromTable(0);
+        if (prescriptionId == null || prescriptionId.trim().isEmpty()) return;
+
+        Prescription prescription = model.getPrescriptionById(prescriptionId.trim());
+        if (prescription == null) {
+            JOptionPane.showMessageDialog(view, "Prescription not found: " + prescriptionId);
+            return;
+        }
+
+        String current = (prescription.getPrescriptionStatus() == null)
+                ? ""
+                : prescription.getPrescriptionStatus().toString();
+
+        String newStatus = JOptionPane.showInputDialog(
+                view,
+                "Enter new status for Prescription " + prescriptionId + " (Draft, Issued, Dispensed, Collected, Cancelled):",
+                current
+        );
+        if (newStatus == null) return;
+        if (newStatus.trim().isEmpty()) return;
+
+        PrescriptionStatus prescriptionStatus;
+        try {
+            String normalised =
+                    newStatus.trim().substring(0, 1).toUpperCase()
+                            + newStatus.trim().substring(1).toLowerCase();
+
+            prescriptionStatus = PrescriptionStatus.valueOf(normalised);
+        } catch (Exception exception) {
+            JOptionPane.showMessageDialog(view,
+                    "Invalid status. Use: Draft, Issued, Dispensed, Collected, Cancelled");
+            return;
+        }
+
+        prescription.setPrescriptionStatus(prescriptionStatus);
+        model.updatePrescription(prescription);
+        handleLoadPrescriptions();
+    }
+
+    private void handlePrintSelectedPrescription() {
+        String prescriptionId = view.getSelectedIdFromTable(0);
+        if (prescriptionId == null || prescriptionId.trim().isEmpty()) return;
+
+        Prescription prescription = model.getPrescriptionById(prescriptionId);
+        if (prescription == null) {
+            JOptionPane.showMessageDialog(view, "Prescription not found: " + prescriptionId);
+            return;
+        }
+
+        model.printPrescriptionToFile(prescription);
+        JOptionPane.showMessageDialog(view, "Prescription written to file.");
+    }
+
+    // ========== Appointment Management Handlers ==========
+
+    private void handleLoadAppointments() {
+        view.showAppointments(model.getAllAppointments());
     }
 
     private void handleCreateAppointment() {
@@ -185,16 +287,16 @@ public class HmsController {
                 appointmentId + "," +
                         input.patientId + "," +
                         input.clinicianId + "," +
-                        "," +              // facilityId
+                        "," +
                         input.date + "," +
-                        "," +              // time
-                        "," +              // duration
-                        "," +              // type
-                        "NEW," +           // status
-                        "," +              // reason
-                        "," +              // notes
-                        "," +              // createdDate
-                        ""                 // lastModified
+                        "," +
+                        "," +
+                        "," +
+                        "NEW," +
+                        "," +
+                        "," +
+                        "," +
+                        ""
         );
 
         if (a == null) {
@@ -206,75 +308,17 @@ public class HmsController {
         handleLoadAppointments();
     }
 
-    private void handleEditReferral() {
-        if (view.getTableColumnCount() == 0 || !"Referral ID".equals(view.getTableColumnName(0))) {
-            JOptionPane.showMessageDialog(view, "Please load referrals first, then select a referral row.");
-            return;
-        }
-
-        String referralId = view.getSelectedIdFromTable(0);
-        if (referralId == null || referralId.trim().isEmpty()) return;
-
-        Referral r = model.getReferralById(referralId);
-        if (r == null) {
-            JOptionPane.showMessageDialog(view, "Referral not found: " + referralId);
-            return;
-        }
-
-        String newStatus = JOptionPane.showInputDialog(view, "Enter new status for Referral " + referralId + ":", r.getStatus());
-        if (newStatus == null) return;
-
-        r.setStatus(newStatus.trim());
-        r.setLastUpdated(new Date());
-
-        model.updateReferral(r);
-        handleLoadReferrals();
-    }
-
-    private void handlePrintSelectedReferral() {
-        String referralId = view.getSelectedIdFromTable(0);
-        if (referralId == null || referralId.trim().isEmpty()) return;
-
-        Referral r = model.getReferralById(referralId);
-        if (r == null) {
-            JOptionPane.showMessageDialog(view, "Referral not found: " + referralId);
-            return;
-        }
-
-        model.printReferralToFile(r);
-        JOptionPane.showMessageDialog(view, "Referral written to file.");
-    }
-
-    private void handlePrintSelectedPrescription() {
-        String prescriptionId = view.getSelectedIdFromTable(0);
-        if (prescriptionId == null || prescriptionId.trim().isEmpty()) return;
-
-        Prescription p = model.getPrescriptionById(prescriptionId);
-        if (p == null) {
-            JOptionPane.showMessageDialog(view, "Prescription not found: " + prescriptionId);
-            return;
-        }
-
-        model.printPrescriptionToFile(p);
-        JOptionPane.showMessageDialog(view, "Prescription written to file.");
-    }
-
     private void handleClose() {
-        // Same intent as Bookshop example: save on exit
         model.saveAllData();
     }
 }
 
-/**
- * Listener used by the View to signal the selected role.
- */
+// ========== Event Listener Interfaces ==========
+
 interface SelectRoleListener {
     void onSelectRole(String role);
 }
 
-/**
- * Listener used by the View to go back to role select.
- */
 interface BackToRoleSelectListener {
     void onBack();
 }
