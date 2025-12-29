@@ -56,6 +56,16 @@ public class HmsController {
             public void run() { handleEditPrescription(); }
         });
 
+        // Edit appointment (admin and patient)
+        view.setEditAppointmentListener(new Runnable() {
+            public void run() { handleEditAppointment(); }
+        });
+
+        // Cancel appointment (admin and patient)
+        view.setCancelAppointmentListener(new Runnable() {
+            public void run() { handleCancelAppointment(); }
+        });
+
         // Print selected to file (consultant)
         view.setPrintSelectedReferralListener(new Runnable() {
             public void run() { handlePrintSelectedReferral(); }
@@ -64,13 +74,13 @@ public class HmsController {
             public void run() { handlePrintSelectedPrescription(); }
         });
 
-        // Close behaviour
+        // close behaviour
         view.setOnCloseListener(new Runnable() {
             public void run() { handleClose(); }
         });
     }
 
-    // ========== Role Selection Navigation Handlers ==========
+    // role selection navigation handlers
 
     private void handleSelectRole(String role) {
         if ("ADMIN".equals(role)) {
@@ -84,13 +94,13 @@ public class HmsController {
         }
     }
 
-    // ========== Patient Management Handlers ==========
+    // patient management handlers
 
     private void handleLoadPatients() {
         view.showPatients(model.getAllPatients());
     }
 
-    // ========== Referral Management Handlers ==========
+    // referral management handlers
 
     private void handleLoadReferrals() {
         view.showReferrals(model.getAllReferrals());
@@ -107,23 +117,9 @@ public class HmsController {
         String referralId = model.generateReferralId();
 
         Referral referral = new Referral(
-                referralId,
-                input.patientId,
-                "",
-                "",
-                input.facilityId,
-                "",
-                new Date(),
-                urgency,
-                "",
-                input.summary,
-                "",
-                "In Progress",
-                "",
-                "",
-                new Date(),
-                new Date(),
-                null
+                referralId, input.patientId, "", "", input.facilityId,
+                "", new Date(), urgency, "", input.summary, "",
+                "In Progress", "", "", new Date(), new Date(), null
         );
 
         model.addReferral(referral);
@@ -173,7 +169,7 @@ public class HmsController {
         JOptionPane.showMessageDialog(view, "Referral written to file.");
     }
 
-    // ========== Prescription Management Handlers ==========
+    // prescription management handlers
 
     private void handleLoadPrescriptions() {
         view.showPrescriptions(model.getAllPrescriptions());
@@ -186,22 +182,8 @@ public class HmsController {
         String prescriptionId = model.generatePrescriptionId();
 
         Prescription prescription = Prescription.fromCSV(
-                prescriptionId + "," +
-                        input.patientId + "," +
-                        "," +
-                        "," +
-                        "," +
-                        input.medicationName + "," +
-                        "," +
-                        "," +
-                        "," +
-                        "," +
-                        "," +
-                        input.pharmacyName + "," +
-                        input.status + "," +
-                        "," +
-                        ""
-        );
+                prescriptionId + "," + input.patientId + "," + "," + "," + "," + input.medicationName + "," +
+                        "," + "," + "," + "," + "," + input.pharmacyName + "," + input.status + "," + "," + "" );
 
         if (prescription == null) {
             JOptionPane.showMessageDialog(view, "Could not create prescription (invalid input).");
@@ -271,11 +253,70 @@ public class HmsController {
         JOptionPane.showMessageDialog(view, "Prescription written to file.");
     }
 
-    // ========== Appointment Management Handlers ==========
+    // appointment management handlers
 
     private void handleLoadAppointments() {
         view.showAppointments(model.getAllAppointments());
     }
+
+    private void handleEditAppointment() {
+        if (view.getTableColumnCount() == 0 || !"Appointment ID".equals(view.getTableColumnName(0))) {
+            JOptionPane.showMessageDialog(view, "Please load appointments first, then select an appointment row.");
+            return;
+        }
+
+        String appointmentId = view.getSelectedIdFromTable(0);
+        if (appointmentId == null || appointmentId.trim().isEmpty()) return;
+
+        Appointment a = model.getAppointmentById(appointmentId.trim());
+        if (a == null) {
+            JOptionPane.showMessageDialog(view, "Appointment not found: " + appointmentId);
+            return;
+        }
+
+        String current = (a.getStatus() == null) ? "" : a.getStatus().name();
+        String newStatus = JOptionPane.showInputDialog(
+                view,
+                "Enter new status (SCHEDULED, CANCELLED, COMPLETED):",
+                current
+        );
+        if (newStatus == null) return;
+
+        AppointmentStatus status;
+        try {
+            status = AppointmentStatus.valueOf(newStatus.trim().toUpperCase());
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(view, "Invalid status. Use: SCHEDULED, CANCELLED, COMPLETED");
+            return;
+        }
+
+        a.setStatus(status);
+        a.setLastModified(new Date());
+        model.updateAppointment(a);
+
+        handleLoadAppointments();
+    }
+
+
+    private void handleCancelAppointment() {
+        if (view.getTableColumnCount() == 0 || !"Appointment ID".equals(view.getTableColumnName(0))) {
+            JOptionPane.showMessageDialog(view, "Please load appointments first, then select an appointment row.");
+            return;
+        }
+
+        String appointmentId = view.getSelectedIdFromTable(0);
+        if (appointmentId == null || appointmentId.trim().isEmpty()) return;
+
+        boolean ok = model.cancelAppointment(appointmentId.trim());
+        if (!ok) {
+            JOptionPane.showMessageDialog(view, "Appointment not found: " + appointmentId);
+            return;
+        }
+
+        JOptionPane.showMessageDialog(view, "Appointment cancelled: " + appointmentId);
+        handleLoadAppointments();
+    }
+
 
     private void handleCreateAppointment() {
         HmsView.AppointmentInput input = view.promptForAppointment();

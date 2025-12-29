@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 /**
@@ -61,7 +62,7 @@ public class HmsModel {
         saveReferrals();
     }
 
-    // ========== Patient Management ==========
+    // patient management
 
     private void loadPatients() {
         ArrayList<String> lines = CSVHandler.readLines(PATIENTS_FILE);
@@ -92,7 +93,7 @@ public class HmsModel {
         return new ArrayList<Patient>(patients.values());
     }
 
-    // ========== Clinician Management ==========
+    // clinician management
 
     private void loadClinicians() {
         ArrayList<String> lines = CSVHandler.readLines(CLINICIANS_FILE);
@@ -119,7 +120,7 @@ public class HmsModel {
         return new ArrayList<Clinician>(clinicians.values());
     }
 
-    // ========== Facility Management ==========
+    // facility management
 
     private void loadFacilities() {
         ArrayList<String> lines = CSVHandler.readLines(FACILITIES_FILE);
@@ -146,7 +147,7 @@ public class HmsModel {
         return new ArrayList<Facility>(facilities.values());
     }
 
-    // ========== Appointment Management ==========
+    // appointment management
 
     private void loadAppointments() {
         ArrayList<String> lines = CSVHandler.readLines(APPOINTMENTS_FILE);
@@ -175,11 +176,34 @@ public class HmsModel {
         saveAppointments();
     }
 
+    public void updateAppointment(Appointment appointment) {
+        if (appointment == null) return;
+        appointments.put(appointment.getAppointmentId(), appointment);
+        saveAppointments();
+    }
+
+
+    public boolean cancelAppointment(String appointmentId) {
+        if (appointmentId == null || appointmentId.trim().isEmpty()) return false;
+
+        Appointment a = appointments.get(appointmentId);
+        if (a == null) return false;
+
+        a.setStatus(AppointmentStatus.CANCELLED);
+        a.setLastModified(new Date());
+
+        saveAppointments();
+        return true;
+    }
+
+    public Appointment getAppointmentById(String id) {
+        return appointments.get(id); }
+
     public ArrayList<Appointment> getAllAppointments() {
         return new ArrayList<Appointment>(appointments.values());
     }
 
-    // ========== Prescription Management ==========
+    // prescription management
 
     private void loadPrescriptions() {
         ArrayList<String> lines = CSVHandler.readLines(PRESCRIPTIONS_FILE);
@@ -211,14 +235,14 @@ public class HmsModel {
     public void updatePrescription(Prescription prescription) {
         if (prescription == null) return;
         prescriptions.put(prescription.getPrescriptionId(), prescription);
-        saveReferrals();
+        savePrescriptions();
     }
 
     public ArrayList<Prescription> getAllPrescriptions() {
         return new ArrayList<Prescription>(prescriptions.values());
     }
 
-    // ========== Referral Management (Singleton) ==========
+    // referral management (singleton)
 
     private void loadReferrals() {
         ArrayList<String> lines = CSVHandler.readLines(REFERRALS_FILE);
@@ -249,7 +273,7 @@ public class HmsModel {
         // Singleton that manages referral queue / audit
         referralManager.addReferral(referral);
 
-        // Simulation of the email by writing a readable line to a text file located in the main HMS directory.
+        // this is my simulation of the email by writing a readable line to a text file located in the main HMS directory.
         CSVHandler.appendLine(REFERRAL_EMAIL_FILE, formatReferralEmail(referral));
     }
 
@@ -297,7 +321,7 @@ public class HmsModel {
                 " urgency=" + referral.getUrgencyLevel();
     }
 
-    // ========== ID Generation ==========
+    // id generation
 
     private void initialiseIdCounters() {
         // Referrals: generates numeric IDs extending the existing scheme

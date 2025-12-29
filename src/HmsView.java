@@ -27,11 +27,16 @@ public class HmsView extends JFrame {
 
     // Create listeners
     private Runnable createReferralListener;
+    private Runnable createPrescriptionListener;
     private Runnable createAppointmentListener;
 
-    // Edit listener (admin)
+    // Edit listener
     private Runnable editReferralListener;
     private Runnable editPrescriptionListener;
+    private Runnable editAppointmentListener;
+
+    // Cancel listener
+    private Runnable cancelAppointmentListener;
 
     // Print selected record listeners (consultant)
     private Runnable printSelectedReferralListener;
@@ -56,16 +61,18 @@ public class HmsView extends JFrame {
     private JButton adminLoadPrescriptionsButton;
     private JButton adminLoadAppointmentsButton;
     private JButton adminCreateAppointmentButton;
+    private JButton adminEditAppointmentButton;
+    private JButton adminCancelAppointmentButton;
     private JButton adminEditReferralButton;
     private JButton adminBackButton;
 
     // Consultant buttons
     private JButton consultantLoadReferralsButton;
     private JButton consultantCreateReferralButton;
-    private JButton consultantCreatePrescriptionButton;
     private JButton consultantPrintReferralButton;
     private JButton consultantEditReferralButton;
     private JButton consultantLoadPrescriptionButton;
+    private JButton consultantCreatePrescriptionButton;
     private JButton consultantPrintPrescriptionButton;
     private JButton consultantEditPrescriptionButton;
     private JButton consultantBackButton;
@@ -74,6 +81,8 @@ public class HmsView extends JFrame {
     private JButton patientLoadPrescriptionsButton;
     private JButton patientLoadAppointmentsButton;
     private JButton patientCreateAppointmentButton;
+    private JButton patientEditAppointmentButton;
+    private JButton patientCancelAppointmentButton;
     private JButton patientBackButton;
 
     public HmsView() {
@@ -143,6 +152,8 @@ public class HmsView extends JFrame {
         adminEditReferralButton = new JButton("Edit Referral");
         adminLoadAppointmentsButton = new JButton("Load Appointments");
         adminCreateAppointmentButton = new JButton("Create Appointment");
+        adminEditAppointmentButton = new JButton("Edit Appointment");
+        adminCancelAppointmentButton = new JButton("Cancel Appointment");
         adminBackButton = new JButton("Back");
 
         buttonsPanel.add(adminLoadPatientsButton);
@@ -151,6 +162,8 @@ public class HmsView extends JFrame {
         buttonsPanel.add(adminLoadPrescriptionsButton);
         buttonsPanel.add(adminLoadAppointmentsButton);
         buttonsPanel.add(adminCreateAppointmentButton);
+        buttonsPanel.add(adminEditAppointmentButton);
+        buttonsPanel.add(adminCancelAppointmentButton);
         buttonsPanel.add(adminBackButton);
 
         adminLoadPatientsButton.addActionListener(e -> {
@@ -168,6 +181,11 @@ public class HmsView extends JFrame {
             if (loadAppointmentsListener != null) loadAppointmentsListener.run(); });
         adminCreateAppointmentButton.addActionListener(e -> {
             if (createAppointmentListener != null) createAppointmentListener.run(); });
+        adminEditAppointmentButton.addActionListener(e -> {
+            if (editAppointmentListener != null) editAppointmentListener.run(); });
+        adminCancelAppointmentButton.addActionListener(e -> {
+            if (cancelAppointmentListener != null) cancelAppointmentListener.run(); });
+
         adminBackButton.addActionListener(e -> {
             if (backToRoleSelectListener != null) backToRoleSelectListener.onBack(); });
 
@@ -230,11 +248,15 @@ public class HmsView extends JFrame {
         patientLoadPrescriptionsButton = new JButton("Load Prescriptions");
         patientLoadAppointmentsButton = new JButton("Load Appointments");
         patientCreateAppointmentButton = new JButton("Create Appointment");
+        patientEditAppointmentButton = new JButton("Edit Appointment");
+        patientCancelAppointmentButton = new JButton("Cancel Appointment");
         patientBackButton = new JButton("Back");
 
         buttonsPanel.add(patientLoadPrescriptionsButton);
         buttonsPanel.add(patientLoadAppointmentsButton);
         buttonsPanel.add(patientCreateAppointmentButton);
+        buttonsPanel.add(patientEditAppointmentButton);
+        buttonsPanel.add(patientCancelAppointmentButton);
         buttonsPanel.add(patientBackButton);
 
         patientLoadPrescriptionsButton.addActionListener(e -> {
@@ -243,6 +265,11 @@ public class HmsView extends JFrame {
             if (loadAppointmentsListener != null) loadAppointmentsListener.run(); });
         patientCreateAppointmentButton.addActionListener(e -> {
             if (createAppointmentListener != null) createAppointmentListener.run(); });
+        patientEditAppointmentButton.addActionListener(e -> {
+            if (editAppointmentListener != null) editAppointmentListener.run(); });
+        patientCancelAppointmentButton.addActionListener(e -> {
+            if (cancelAppointmentListener != null) cancelAppointmentListener.run(); });
+
         patientBackButton.addActionListener(e -> {
             if (backToRoleSelectListener != null) backToRoleSelectListener.onBack(); });
 
@@ -265,31 +292,32 @@ public class HmsView extends JFrame {
     public void showConsultantView() { cardLayout.show(cards, "CONSULTANT"); }
     public void showPatientView() { cardLayout.show(cards, "PATIENT"); }
 
-    // ===== Listener setters =====
-
+    // listener setters
     public void setSelectRoleListener(SelectRoleListener l) { this.selectRoleListener = l; }
     public void setBackToRoleSelectListener(BackToRoleSelectListener l) { this.backToRoleSelectListener = l; }
 
-    public void setLoadPatientsListener(Runnable l) { this.loadPatientsListener = l; }
+    public void setLoadPatientsListener(Runnable l) {this.loadPatientsListener = l; }
     public void setLoadReferralsListener(Runnable l) { this.loadReferralsListener = l; }
     public void setLoadPrescriptionsListener(Runnable l) { this.loadPrescriptionsListener = l; }
     public void setLoadAppointmentsListener(Runnable l) { this.loadAppointmentsListener = l; }
 
     public void setCreateReferralListener(Runnable l) { this.createReferralListener = l; }
-    public void setCreatePrescriptionListener(Runnable l) {
-    }
+    public void setCreatePrescriptionListener(Runnable l) { }
     public void setCreateAppointmentListener(Runnable l) { this.createAppointmentListener = l; }
-
     public void setEditReferralListener(Runnable l) { this.editReferralListener = l; }
 
     public void setPrintSelectedReferralListener(Runnable l) { this.printSelectedReferralListener = l; }
     public void setPrintSelectedPrescriptionListener(Runnable l) { this.printSelectedPrescriptionListener = l; }
+
     public void setEditPrescriptionListener(Runnable l) { this.editPrescriptionListener = l; }
+    public void setEditAppointmentListener(Runnable l) { this.editAppointmentListener = l; }
+
+    public void setCancelAppointmentListener(Runnable l) { this.cancelAppointmentListener = l; }
 
 
     public void setOnCloseListener(Runnable l) { this.onCloseListener = l; }
 
-    // ===== Table selection helpers =====
+    // table selection helpers
 
     private boolean hasSelectedRow() {
         return mainTable != null && mainTable.getSelectedRow() >= 0;
@@ -320,13 +348,13 @@ public class HmsView extends JFrame {
         return mainTable.getModel().getColumnName(index);
     }
 
-    // ===== Table displays =====
+    // table displays
 
     public void showPatients(List<Patient> patients) {
         String[] columns = {
                 "Patient ID", "First Name", "Last Name", "DOB", "NHS No", "Gender",
-                "Phone", "Email", "Address", "Postcode",
-                "Emergency Name", "Emergency Phone", "Registration Date", "GP Surgery ID"
+                "Phone", "Email", "Address", "Postcode", "Emergency Name",
+                "Emergency Phone", "Registration Date", "GP Surgery ID"
         };
 
         DefaultTableModel tableModel = new DefaultTableModel(columns, 0);
@@ -391,7 +419,7 @@ public class HmsView extends JFrame {
         mainTable.setModel(tableModel);
     }
 
-    // text prompts to assist the user
+    // advice messages to assist the user
 
     public ReferralInput promptForReferral() {
         String patientId = JOptionPane.showInputDialog(this, "Enter Patient ID (e.g. P001):");

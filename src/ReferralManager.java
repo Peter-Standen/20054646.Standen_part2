@@ -6,7 +6,7 @@ public class ReferralManager {
 
     private static ReferralManager instance;
 
-    private ArrayList<Referral> referrals;
+    private final ArrayList<Referral> referrals;
     private Queue<Referral> pending;
 
     private ReferralManager() {
@@ -21,19 +21,19 @@ public class ReferralManager {
         return instance;
     }
 
-    // bookshop equivalent: placeOrder(...)
+    // I have aligned this with the placeOrder from the bookshop
     public void addReferral(Referral r) {
         if (r == null) return;
         referrals.add(r);
         pending.add(r);
     }
 
-    // bookshop equivalent: getAllOrders()
+    // I have aligned this with the getAllOrders() method from the bookshop
     public ArrayList<Referral> getAllReferrals() {
         return referrals;
     }
 
-    // bookshop equivalent: completeOrder(orderId)
+    // I have aligned this with the completeOrder(orderId) method from the bookshop
     public void completeReferral(String referralId) {
         if (referralId == null) return;
 
