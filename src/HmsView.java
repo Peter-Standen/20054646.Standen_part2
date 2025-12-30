@@ -285,7 +285,7 @@ public class HmsView extends JFrame {
         });
     }
 
-    // ===== Navigation helpers =====
+    // navigation helpers
 
     public void showRoleSelectView() { cardLayout.show(cards, "ROLE_SELECT"); }
     public void showAdminView() { cardLayout.show(cards, "ADMIN"); }
@@ -384,36 +384,58 @@ public class HmsView extends JFrame {
     }
 
     public void showReferrals(List<Referral> referrals) {
-        String[] columns = {"Referral ID", "Patient ID", "Status", "Urgency"};
+        String[] columns = {"Referral ID" , "Patient ID", "Referring Clinician ID", "Referred To Clinician ID"," "+
+                "Referring Facility ID", "Referred To Facility ID", "Referral Date", "Urgency Level", "Referral Reason"," "+
+                "Clinical Summary", "Requested Investigations", "Status", "Appointment ID", "Notes", "Created Date"," "+
+                "Last Updated"};
         DefaultTableModel tableModel = new DefaultTableModel(columns, 0);
 
         for (int i = 0; i < referrals.size(); i++) {
             Referral referral = referrals.get(i);
-            tableModel.addRow(new Object[]{ referral.getReferralId(), referral.getPatientId(), referral.getStatus(), referral.getUrgencyLevel() });
+            tableModel.addRow(new Object[]{ referral.getReferralId(), referral.getPatientId(),
+                    referral.getReferringClinicianId(), referral.getReferredToClinicianId(), referral.getReferringFacilityId(),
+                    referral.getReferredToFacilityId(), referral.getReferralDate(), referral.getUrgencyLevel(),
+                    referral.getReferralReason(), referral.getClinicalSummary(), referral.getRequestedInvestigations(),
+                    referral.getStatus(), referral.getAppointmentId(), referral.getNotes(), referral.getCreatedDate(),
+                    referral.getLastUpdated() });
         }
 
         mainTable.setModel(tableModel);
     }
 
     public void showPrescriptions(List<Prescription> prescriptions) {
-        String[] columns = {"Prescription ID", "Medication", "Status", "Pharmacy"};
+        String[] columns = {"Prescription ID", "Patient ID", "Clinician ID", "Appointment ID", "Prescription Date",
+                "Medication Name", "Dosage", "Frequency", "Duration Days", "Quantity", "Instructions",
+                "Pharmacy Name", "Status", "Issue Date", "Collection Date"};
         DefaultTableModel tableModel = new DefaultTableModel(columns, 0);
 
         for (int i = 0; i < prescriptions.size(); i++) {
             Prescription prescription = prescriptions.get(i);
-            tableModel.addRow(new Object[]{ prescription.getPrescriptionId(), prescription.getMedicationName(), prescription.getPrescriptionStatus(), prescription.getPharmacyName() });
+            tableModel.addRow(new Object[]{ prescription.getPrescriptionId(), prescription.getPatientId(),
+                    prescription.getClinicianId(), prescription.getAppointmentId(), prescription.getPrescriptionDate(),
+                    prescription.getMedicationName(), prescription.getDosage(), prescription.getFrequency(),
+                    prescription.getDurationDays(), prescription.getQuantity(), prescription.getInstructions(),
+                    prescription.getPharmacyName(), prescription.getPrescriptionStatus(), prescription.getIssueDate(),
+                    prescription.getCollectionDate() });
         }
 
         mainTable.setModel(tableModel);
     }
 
     public void showAppointments(List<Appointment> appointments) {
-        String[] columns = {"Appointment ID", "Patient ID", "Date", "Status"};
+        String[] columns = {"Appointment ID", "Patient ID", "Clinician ID", "Facility ID", "Appointment Date",
+                "Time", "Duration", "Appointment Type", "Status", "Reason For Visit", "Notes", "Created Date",
+                "Last Modified" };
+
         DefaultTableModel tableModel = new DefaultTableModel(columns, 0);
 
         for (int i = 0; i < appointments.size(); i++) {
             Appointment appointment = appointments.get(i);
-            tableModel.addRow(new Object[]{ appointment.getAppointmentId(), appointment.getPatientId(), appointment.getAppointmentDate(), appointment.getStatus() });
+            tableModel.addRow(new Object[]{ appointment.getAppointmentId(), appointment.getPatientId(),
+                    appointment.getClinicianId(), appointment.getFacilityId(), appointment.getAppointmentDate(),
+                    appointment.getAppointmentTime(), appointment.getDurationMinutes(), appointment.getAppointmentType(),
+                    appointment.getStatus(), appointment.getReasonForVisit(), appointment.getNotes(), appointment.getCreatedDate(),
+                    appointment.getLastModified() });
         }
 
         mainTable.setModel(tableModel);

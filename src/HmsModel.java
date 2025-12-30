@@ -186,15 +186,16 @@ public class HmsModel {
     public boolean cancelAppointment(String appointmentId) {
         if (appointmentId == null || appointmentId.trim().isEmpty()) return false;
 
-        Appointment a = appointments.get(appointmentId);
-        if (a == null) return false;
+        Appointment appointment = appointments.get(appointmentId);
+        if (appointment == null) return false;
 
-        a.setStatus(AppointmentStatus.CANCELLED);
-        a.setLastModified(new Date());
+        appointment.setStatus("CANCELLED");
+        appointment.setLastModified(new Date());
 
         saveAppointments();
         return true;
     }
+
 
     public Appointment getAppointmentById(String id) {
         return appointments.get(id); }

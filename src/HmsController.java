@@ -110,15 +110,11 @@ public class HmsController {
         HmsView.ReferralInput input = view.promptForReferral();
         if (input == null) return;
 
-        Integer urgency = null;
-        try { urgency = Integer.parseInt(input.urgency.trim()); }
-        catch (Exception ignored) { urgency = null; }
-
         String referralId = model.generateReferralId();
 
         Referral referral = new Referral(
                 referralId, input.patientId, "", "", input.facilityId,
-                "", new Date(), urgency, "", input.summary, "",
+                "", new Date(), "", "", input.summary, "",
                 "In Progress", "", "", new Date(), new Date(), null
         );
 
@@ -268,13 +264,13 @@ public class HmsController {
         String appointmentId = view.getSelectedIdFromTable(0);
         if (appointmentId == null || appointmentId.trim().isEmpty()) return;
 
-        Appointment a = model.getAppointmentById(appointmentId.trim());
-        if (a == null) {
+        Appointment appointment = model.getAppointmentById(appointmentId.trim());
+        if (appointment == null) {
             JOptionPane.showMessageDialog(view, "Appointment not found: " + appointmentId);
             return;
         }
 
-        String current = (a.getStatus() == null) ? "" : a.getStatus().name();
+        String current = (appointment.getStatus() == null) ? "" : appointment.getStatus();
         String newStatus = JOptionPane.showInputDialog(
                 view,
                 "Enter new status (SCHEDULED, CANCELLED, COMPLETED):",
@@ -282,17 +278,18 @@ public class HmsController {
         );
         if (newStatus == null) return;
 
-        AppointmentStatus status;
-        try {
-            status = AppointmentStatus.valueOf(newStatus.trim().toUpperCase());
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(view, "Invalid status. Use: SCHEDULED, CANCELLED, COMPLETED");
+        String input = newStatus.trim().toUpperCase();
+
+        if (!input.equals("SCHEDULED") && !input.equals("CANCELLED") && !input.equals("COMPLETED")) {
+            JOptionPane.showMessageDialog(view,
+                    "Invalid status. Please enter: SCHEDULED, CANCELLED, or COMPLETED");
             return;
         }
 
-        a.setStatus(status);
-        a.setLastModified(new Date());
-        model.updateAppointment(a);
+        appointment.setStatus(input);
+
+        appointment.setLastModified(new Date());
+        model.updateAppointment(appointment);
 
         handleLoadAppointments();
     }
