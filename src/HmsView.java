@@ -92,6 +92,7 @@ public class HmsView extends JFrame {
         setLocationRelativeTo(null);
 
         initComponents();
+        wireWindowClose(); // important: matches bookshop "on close" behaviour
     }
 
     public void setController(HmsController controller) {
@@ -131,11 +132,14 @@ public class HmsView extends JFrame {
         buttonsPanel.add(patientRoleButton);
 
         adminRoleButton.addActionListener(e -> {
-            if (selectRoleListener != null) selectRoleListener.onSelectRole("ADMIN"); });
+            if (selectRoleListener != null) selectRoleListener.onSelectRole("ADMIN");
+        });
         consultantRoleButton.addActionListener(e -> {
-            if (selectRoleListener != null) selectRoleListener.onSelectRole("CONSULTANT"); });
+            if (selectRoleListener != null) selectRoleListener.onSelectRole("CONSULTANT");
+        });
         patientRoleButton.addActionListener(e -> {
-            if (selectRoleListener != null) selectRoleListener.onSelectRole("PATIENT"); });
+            if (selectRoleListener != null) selectRoleListener.onSelectRole("PATIENT");
+        });
 
         return buttonsPanel;
     }
@@ -149,7 +153,6 @@ public class HmsView extends JFrame {
         adminLoadReferralsButton = new JButton("Load Referrals");
         adminEditReferralButton = new JButton("Edit Referral");
         adminLoadPrescriptionsButton = new JButton("Load Prescriptions");
-        adminEditReferralButton = new JButton("Edit Referral");
         adminLoadAppointmentsButton = new JButton("Load Appointments");
         adminCreateAppointmentButton = new JButton("Create Appointment");
         adminEditAppointmentButton = new JButton("Edit Appointment");
@@ -167,27 +170,38 @@ public class HmsView extends JFrame {
         buttonsPanel.add(adminBackButton);
 
         adminLoadPatientsButton.addActionListener(e -> {
-            if (loadPatientsListener != null) loadPatientsListener.run(); });
+            if (loadPatientsListener != null) loadPatientsListener.run();
+        });
         adminLoadReferralsButton.addActionListener(e -> {
-            if (loadReferralsListener != null) loadReferralsListener.run(); });
+            if (loadReferralsListener != null) loadReferralsListener.run();
+        });
         adminEditReferralButton.addActionListener(e -> {
             if (!hasSelectedRow()) { showSelectRowMessage(); return; }
-            if (editReferralListener != null) editReferralListener.run(); });
+            if (editReferralListener != null) editReferralListener.run();
+        });
 
         adminLoadPrescriptionsButton.addActionListener(e -> {
-            if (loadPrescriptionsListener != null) loadPrescriptionsListener.run(); });
+            if (loadPrescriptionsListener != null) loadPrescriptionsListener.run();
+        });
 
         adminLoadAppointmentsButton.addActionListener(e -> {
-            if (loadAppointmentsListener != null) loadAppointmentsListener.run(); });
+            if (loadAppointmentsListener != null) loadAppointmentsListener.run();
+        });
         adminCreateAppointmentButton.addActionListener(e -> {
-            if (createAppointmentListener != null) createAppointmentListener.run(); });
+            if (createAppointmentListener != null) createAppointmentListener.run();
+        });
         adminEditAppointmentButton.addActionListener(e -> {
-            if (editAppointmentListener != null) editAppointmentListener.run(); });
+            if (!hasSelectedRow()) { showSelectRowMessage(); return; }
+            if (editAppointmentListener != null) editAppointmentListener.run();
+        });
         adminCancelAppointmentButton.addActionListener(e -> {
-            if (cancelAppointmentListener != null) cancelAppointmentListener.run(); });
+            if (!hasSelectedRow()) { showSelectRowMessage(); return; }
+            if (cancelAppointmentListener != null) cancelAppointmentListener.run();
+        });
 
         adminBackButton.addActionListener(e -> {
-            if (backToRoleSelectListener != null) backToRoleSelectListener.onBack(); });
+            if (backToRoleSelectListener != null) backToRoleSelectListener.onBack();
+        });
 
         return buttonsPanel;
     }
@@ -217,25 +231,38 @@ public class HmsView extends JFrame {
         buttonsPanel.add(consultantBackButton);
 
         consultantLoadReferralsButton.addActionListener(e -> {
-            if (loadReferralsListener != null) loadReferralsListener.run(); });
+            if (loadReferralsListener != null) loadReferralsListener.run();
+        });
         consultantCreateReferralButton.addActionListener(e -> {
-            if (createReferralListener != null) createReferralListener.run(); });
+            if (createReferralListener != null) createReferralListener.run();
+        });
         consultantEditReferralButton.addActionListener(e -> {
             if (!hasSelectedRow()) { showSelectRowMessage(); return; }
-            if (editReferralListener != null) editReferralListener.run(); });
+            if (editReferralListener != null) editReferralListener.run();
+        });
         consultantPrintReferralButton.addActionListener(e -> {
             if (!hasSelectedRow()) { showSelectRowMessage(); return; }
-            if (printSelectedReferralListener != null) printSelectedReferralListener.run(); });
+            if (printSelectedReferralListener != null) printSelectedReferralListener.run();
+        });
+
         consultantLoadPrescriptionButton.addActionListener(e -> {
-            if (loadPrescriptionsListener != null) loadPrescriptionsListener.run(); });
+            if (loadPrescriptionsListener != null) loadPrescriptionsListener.run();
+        });
+        consultantCreatePrescriptionButton.addActionListener(e -> {
+            if (createPrescriptionListener != null) createPrescriptionListener.run();
+        });
         consultantEditPrescriptionButton.addActionListener(e -> {
             if (!hasSelectedRow()) { showSelectRowMessage(); return; }
-            if (editPrescriptionListener != null) editPrescriptionListener.run(); });
+            if (editPrescriptionListener != null) editPrescriptionListener.run();
+        });
         consultantPrintPrescriptionButton.addActionListener(e -> {
             if (!hasSelectedRow()) { showSelectRowMessage(); return; }
-            if (printSelectedPrescriptionListener != null) printSelectedPrescriptionListener.run();});
+            if (printSelectedPrescriptionListener != null) printSelectedPrescriptionListener.run();
+        });
+
         consultantBackButton.addActionListener(e -> {
-            if (backToRoleSelectListener != null) backToRoleSelectListener.onBack(); });
+            if (backToRoleSelectListener != null) backToRoleSelectListener.onBack();
+        });
 
         return buttonsPanel;
     }
@@ -260,18 +287,26 @@ public class HmsView extends JFrame {
         buttonsPanel.add(patientBackButton);
 
         patientLoadPrescriptionsButton.addActionListener(e -> {
-            if (loadPrescriptionsListener != null) loadPrescriptionsListener.run(); });
+            if (loadPrescriptionsListener != null) loadPrescriptionsListener.run();
+        });
         patientLoadAppointmentsButton.addActionListener(e -> {
-            if (loadAppointmentsListener != null) loadAppointmentsListener.run(); });
+            if (loadAppointmentsListener != null) loadAppointmentsListener.run();
+        });
         patientCreateAppointmentButton.addActionListener(e -> {
-            if (createAppointmentListener != null) createAppointmentListener.run(); });
+            if (createAppointmentListener != null) createAppointmentListener.run();
+        });
         patientEditAppointmentButton.addActionListener(e -> {
-            if (editAppointmentListener != null) editAppointmentListener.run(); });
+            if (!hasSelectedRow()) { showSelectRowMessage(); return; }
+            if (editAppointmentListener != null) editAppointmentListener.run();
+        });
         patientCancelAppointmentButton.addActionListener(e -> {
-            if (cancelAppointmentListener != null) cancelAppointmentListener.run(); });
+            if (!hasSelectedRow()) { showSelectRowMessage(); return; }
+            if (cancelAppointmentListener != null) cancelAppointmentListener.run();
+        });
 
         patientBackButton.addActionListener(e -> {
-            if (backToRoleSelectListener != null) backToRoleSelectListener.onBack(); });
+            if (backToRoleSelectListener != null) backToRoleSelectListener.onBack();
+        });
 
         return buttonsPanel;
     }
@@ -296,24 +331,23 @@ public class HmsView extends JFrame {
     public void setSelectRoleListener(SelectRoleListener l) { this.selectRoleListener = l; }
     public void setBackToRoleSelectListener(BackToRoleSelectListener l) { this.backToRoleSelectListener = l; }
 
-    public void setLoadPatientsListener(Runnable l) {this.loadPatientsListener = l; }
+    public void setLoadPatientsListener(Runnable l) { this.loadPatientsListener = l; }
     public void setLoadReferralsListener(Runnable l) { this.loadReferralsListener = l; }
     public void setLoadPrescriptionsListener(Runnable l) { this.loadPrescriptionsListener = l; }
     public void setLoadAppointmentsListener(Runnable l) { this.loadAppointmentsListener = l; }
 
     public void setCreateReferralListener(Runnable l) { this.createReferralListener = l; }
-    public void setCreatePrescriptionListener(Runnable l) { }
+    public void setCreatePrescriptionListener(Runnable l) { this.createPrescriptionListener = l; }
     public void setCreateAppointmentListener(Runnable l) { this.createAppointmentListener = l; }
+
     public void setEditReferralListener(Runnable l) { this.editReferralListener = l; }
-
-    public void setPrintSelectedReferralListener(Runnable l) { this.printSelectedReferralListener = l; }
-    public void setPrintSelectedPrescriptionListener(Runnable l) { this.printSelectedPrescriptionListener = l; }
-
     public void setEditPrescriptionListener(Runnable l) { this.editPrescriptionListener = l; }
     public void setEditAppointmentListener(Runnable l) { this.editAppointmentListener = l; }
 
     public void setCancelAppointmentListener(Runnable l) { this.cancelAppointmentListener = l; }
 
+    public void setPrintSelectedReferralListener(Runnable l) { this.printSelectedReferralListener = l; }
+    public void setPrintSelectedPrescriptionListener(Runnable l) { this.printSelectedPrescriptionListener = l; }
 
     public void setOnCloseListener(Runnable l) { this.onCloseListener = l; }
 

@@ -179,7 +179,8 @@ public class HmsController {
 
         Prescription prescription = Prescription.fromCSV(
                 prescriptionId + "," + input.patientId + "," + "," + "," + "," + input.medicationName + "," +
-                        "," + "," + "," + "," + "," + input.pharmacyName + "," + input.status + "," + "," + "" );
+                        "," + "," + "," + "," + "," + input.pharmacyName + "," + input.status + "," + "," + ""
+        );
 
         if (prescription == null) {
             JOptionPane.showMessageDialog(view, "Could not create prescription (invalid input).");
@@ -287,13 +288,11 @@ public class HmsController {
         }
 
         appointment.setStatus(input);
-
         appointment.setLastModified(new Date());
         model.updateAppointment(appointment);
 
         handleLoadAppointments();
     }
-
 
     private void handleCancelAppointment() {
         if (view.getTableColumnCount() == 0 || !"Appointment ID".equals(view.getTableColumnName(0))) {
@@ -313,7 +312,6 @@ public class HmsController {
         JOptionPane.showMessageDialog(view, "Appointment cancelled: " + appointmentId);
         handleLoadAppointments();
     }
-
 
     private void handleCreateAppointment() {
         HmsView.AppointmentInput input = view.promptForAppointment();
