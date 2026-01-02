@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.text.SimpleDateFormat;
 
 /**
  * Main Model class for the Healthcare Management System.
@@ -25,6 +26,9 @@ public class HmsModel {
     private static final String REFERRAL_EMAIL_FILE = "referral_emails.txt";
     private static final String REFERRAL_PRINT_FILE = "referral_prints.txt";
     private static final String PRESCRIPTION_PRINT_FILE = "prescription_prints.txt";
+
+    // Bookshop-style date formatting for file output
+    private static final SimpleDateFormat PRINT_DF = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
     // ID counters (initialised after load)
     private int nextReferralNumber = 1;
@@ -66,7 +70,7 @@ public class HmsModel {
 
     private void loadPatients() {
         ArrayList<String> lines = CSVHandler.readLines(PATIENTS_FILE);
-        for (int i = 1; i < lines.size(); i++) { //this gave me a challenge as there is a header on the assignment files!
+        for (int i = 1; i < lines.size(); i++) { // header row
             Patient patient = Patient.fromCSV(lines.get(i));
             if (patient == null) continue;
             patients.put(patient.getPatientId(), patient);
@@ -91,6 +95,42 @@ public class HmsModel {
 
     public ArrayList<Patient> getAllPatients() {
         return new ArrayList<Patient>(patients.values());
+    }
+
+    // Bookshop-style simple lookups (used by View and print-to-file)
+
+    public Patient getPatient(String patientId) {
+        if (patientId == null) return null;
+        return patients.get(patientId);
+    }
+
+    public Clinician getClinician(String clinicianId) {
+        if (clinicianId == null) return null;
+        return clinicians.get(clinicianId);
+    }
+
+    public Facility getFacility(String facilityId) {
+        if (facilityId == null) return null;
+        return facilities.get(facilityId);
+    }
+
+    public String formatPatientLabel(String patientId) {
+        Patient p = getPatient(patientId);
+        if (p == null) return patientId;
+        return p.getFirstName() + " " + p.getLastName() + " (" + patientId + ")";
+    }
+
+    public String formatClinicianLabel(String clinicianId) {
+        Clinician c = getClinician(clinicianId);
+        if (c == null) return clinicianId;
+        String title = (c.getTitle() == null) ? "" : (c.getTitle().toString() + " ");
+        return title + c.getFirstName() + " " + c.getLastName() + " (" + clinicianId + ")";
+    }
+
+    public String formatFacilityLabel(String facilityId) {
+        Facility f = getFacility(facilityId);
+        if (f == null) return facilityId;
+        return f.getFacilityName() + " (" + facilityId + ")";
     }
 
     // clinician management
@@ -182,7 +222,6 @@ public class HmsModel {
         saveAppointments();
     }
 
-
     public boolean cancelAppointment(String appointmentId) {
         if (appointmentId == null || appointmentId.trim().isEmpty()) return false;
 
@@ -196,9 +235,9 @@ public class HmsModel {
         return true;
     }
 
-
     public Appointment getAppointmentById(String id) {
-        return appointments.get(id); }
+        return appointments.get(id);
+    }
 
     public ArrayList<Appointment> getAllAppointments() {
         return new ArrayList<Appointment>(appointments.values());
@@ -274,7 +313,7 @@ public class HmsModel {
         // Singleton that manages referral queue / audit
         referralManager.addReferral(referral);
 
-        // this is my simulation of the email by writing a readable line to a text file located in the main HMS directory.
+        // Simulated email output
         CSVHandler.appendLine(REFERRAL_EMAIL_FILE, formatReferralEmail(referral));
     }
 
@@ -307,37 +346,65 @@ public class HmsModel {
 
     public void printPrescriptionToFile(Prescription prescription) {
         if (prescription == null) return;
-        CSVHandler.appendLine(PRESCRIPTION_PRINT_FILE,
-                "PRESCRIPTION PRINTED | prescriptionId=" + prescription.getPrescriptionId() +
-                        " patientId=" + prescription.getPatientId() +
-                        " medication=" + prescription.getMedicationName() +
-                        " status=" + prescription.getPrescriptionStatus());
+        CSVHandler.appendLine(PRESCRIPTION_PRINT_FILE, formatPrescriptionPrint(prescription));
     }
 
-    private String formatReferralEmail(Referral referral) {
-        return "REFERRAL SENT | " +
-                "referralId=" + referral.getReferralId() +
-                " patientId=" + referral.getPatientId() +
-                " status=" + referral.getStatus() +
-                " urgency=" + referral.getUrgencyLevel();
+    private String formatPrescriptionPrint(Prescription p) {
+        String when = (p.getPrescriptionDate() == null) ? "" : PRINT_DF.format(p.getPrescriptionDate());
+        String issued = (p.getIssueDate() == null) ? "" : PRINT_DF.format(p.getIssueDate());
+        String collected = (p.getCollectionDate() == null) ? "" : PRINT_DF.format(p.getCollectionDate());
+
+        return "PRESCRIPTION | " +
+                "id=" + p.getPrescriptionId() +
+                " patient=" + formatPatientLabel(p.getPatientId()) +
+                " clinician=" + formatClinicianLabel(p.getClinicianId()) +
+                " appointmentId=" + p.getAppointmentId() +
+                " date=" + when +
+                " medication=" + p.getMedicationName() +
+                " dosage=" + p.getDosage() +
+                " frequency=" + p.getFrequency() +
+                " durationDays=" + p.getDurationDays() +
+                " quantity=" + p.getQuantity() +
+                " pharmacy=" + p.getPharmacyName() +
+                " status=" + p.getPrescriptionStatus() +
+                " issueDate=" + issued +
+                " collectionDate=" + collected;
     }
 
-    // id generation
+    private String formatReferralEmail(Referral r) {
+        String when = (r.getReferralDate() == null) ? "" : PRINT_DF.format(r.getReferralDate());
+        String created = (r.getCreatedDate() == null) ? "" : PRINT_DF.format(r.getCreatedDate());
+        String updated = (r.getLastUpdated() == null) ? "" : PRINT_DF.format(r.getLastUpdated());
+
+        return "REFERRAL | " +
+                "id=" + r.getReferralId() +
+                " patient=" + formatPatientLabel(r.getPatientId()) +
+                " from=" + formatClinicianLabel(r.getReferringClinicianId()) +
+                " to=" + formatClinicianLabel(r.getReferredToClinicianId()) +
+                " fromFacility=" + formatFacilityLabel(r.getReferringFacilityId()) +
+                " toFacility=" + formatFacilityLabel(r.getReferredToFacilityId()) +
+                " date=" + when +
+                " urgency=" + r.getUrgencyLevel() +
+                " reason=" + r.getReferralReason() +
+                " status=" + r.getStatus() +
+                " appointmentId=" + r.getAppointmentId() +
+                " created=" + created +
+                " updated=" + updated;
+    }
+
+    // id generation (unchanged)
 
     private void initialiseIdCounters() {
-        // Referrals: generates numeric IDs extending the existing scheme
         for (String id : referrals.keySet()) {
             int number = parseTrailingNumber(id);
             if (number >= nextReferralNumber) nextReferralNumber = number + 1;
         }
 
-        // Prescriptions: generates numeric IDs extending the existing scheme
         for (String id : prescriptions.keySet()) {
             int number = parseTrailingNumber(id);
             if (number >= nextPrescriptionNumber) nextPrescriptionNumber = number + 1;
         }
 
-        // Appointments: generates numeric IDs extending the existing scheme
         for (String id : appointments.keySet()) {
             int number = parseTrailingNumber(id);
             if (number >= nextAppointmentNumber) nextAppointmentNumber = number + 1;
@@ -348,7 +415,6 @@ public class HmsModel {
         if (id == null) return -1;
         String str = id.trim();
 
-        // initially identifies leading letters (RX, AP, R etc)
         while (str.length() > 0 && !Character.isDigit(str.charAt(0))) {
             str = str.substring(1);
         }

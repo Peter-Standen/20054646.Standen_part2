@@ -113,7 +113,7 @@ public class HmsController {
         String referralId = model.generateReferralId();
 
         Referral referral = new Referral(
-                referralId, input.patientId, "", "", input.facilityId,
+                referralId, input.patientId, "", "", input.referringFacilityId,
                 "", new Date(), "", "", input.summary, "",
                 "In Progress", "", "", new Date(), new Date(), null
         );

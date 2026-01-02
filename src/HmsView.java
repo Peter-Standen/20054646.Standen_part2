@@ -176,7 +176,10 @@ public class HmsView extends JFrame {
             if (loadReferralsListener != null) loadReferralsListener.run();
         });
         adminEditReferralButton.addActionListener(e -> {
-            if (!hasSelectedRow()) { showSelectRowMessage(); return; }
+            if (!hasSelectedRow()) {
+                showSelectRowMessage();
+                return;
+            }
             if (editReferralListener != null) editReferralListener.run();
         });
 
@@ -191,11 +194,17 @@ public class HmsView extends JFrame {
             if (createAppointmentListener != null) createAppointmentListener.run();
         });
         adminEditAppointmentButton.addActionListener(e -> {
-            if (!hasSelectedRow()) { showSelectRowMessage(); return; }
+            if (!hasSelectedRow()) {
+                showSelectRowMessage();
+                return;
+            }
             if (editAppointmentListener != null) editAppointmentListener.run();
         });
         adminCancelAppointmentButton.addActionListener(e -> {
-            if (!hasSelectedRow()) { showSelectRowMessage(); return; }
+            if (!hasSelectedRow()) {
+                showSelectRowMessage();
+                return;
+            }
             if (cancelAppointmentListener != null) cancelAppointmentListener.run();
         });
 
@@ -237,11 +246,17 @@ public class HmsView extends JFrame {
             if (createReferralListener != null) createReferralListener.run();
         });
         consultantEditReferralButton.addActionListener(e -> {
-            if (!hasSelectedRow()) { showSelectRowMessage(); return; }
+            if (!hasSelectedRow()) {
+                showSelectRowMessage();
+                return;
+            }
             if (editReferralListener != null) editReferralListener.run();
         });
         consultantPrintReferralButton.addActionListener(e -> {
-            if (!hasSelectedRow()) { showSelectRowMessage(); return; }
+            if (!hasSelectedRow()) {
+                showSelectRowMessage();
+                return;
+            }
             if (printSelectedReferralListener != null) printSelectedReferralListener.run();
         });
 
@@ -252,11 +267,17 @@ public class HmsView extends JFrame {
             if (createPrescriptionListener != null) createPrescriptionListener.run();
         });
         consultantEditPrescriptionButton.addActionListener(e -> {
-            if (!hasSelectedRow()) { showSelectRowMessage(); return; }
+            if (!hasSelectedRow()) {
+                showSelectRowMessage();
+                return;
+            }
             if (editPrescriptionListener != null) editPrescriptionListener.run();
         });
         consultantPrintPrescriptionButton.addActionListener(e -> {
-            if (!hasSelectedRow()) { showSelectRowMessage(); return; }
+            if (!hasSelectedRow()) {
+                showSelectRowMessage();
+                return;
+            }
             if (printSelectedPrescriptionListener != null) printSelectedPrescriptionListener.run();
         });
 
@@ -296,11 +317,17 @@ public class HmsView extends JFrame {
             if (createAppointmentListener != null) createAppointmentListener.run();
         });
         patientEditAppointmentButton.addActionListener(e -> {
-            if (!hasSelectedRow()) { showSelectRowMessage(); return; }
+            if (!hasSelectedRow()) {
+                showSelectRowMessage();
+                return;
+            }
             if (editAppointmentListener != null) editAppointmentListener.run();
         });
         patientCancelAppointmentButton.addActionListener(e -> {
-            if (!hasSelectedRow()) { showSelectRowMessage(); return; }
+            if (!hasSelectedRow()) {
+                showSelectRowMessage();
+                return;
+            }
             if (cancelAppointmentListener != null) cancelAppointmentListener.run();
         });
 
@@ -322,34 +349,86 @@ public class HmsView extends JFrame {
 
     // navigation helpers
 
-    public void showRoleSelectView() { cardLayout.show(cards, "ROLE_SELECT"); }
-    public void showAdminView() { cardLayout.show(cards, "ADMIN"); }
-    public void showConsultantView() { cardLayout.show(cards, "CONSULTANT"); }
-    public void showPatientView() { cardLayout.show(cards, "PATIENT"); }
+    public void showRoleSelectView() {
+        cardLayout.show(cards, "ROLE_SELECT");
+    }
+
+    public void showAdminView() {
+        cardLayout.show(cards, "ADMIN");
+    }
+
+    public void showConsultantView() {
+        cardLayout.show(cards, "CONSULTANT");
+    }
+
+    public void showPatientView() {
+        cardLayout.show(cards, "PATIENT");
+    }
 
     // listener setters
-    public void setSelectRoleListener(SelectRoleListener l) { this.selectRoleListener = l; }
-    public void setBackToRoleSelectListener(BackToRoleSelectListener l) { this.backToRoleSelectListener = l; }
+    public void setSelectRoleListener(SelectRoleListener l) {
+        this.selectRoleListener = l;
+    }
 
-    public void setLoadPatientsListener(Runnable l) { this.loadPatientsListener = l; }
-    public void setLoadReferralsListener(Runnable l) { this.loadReferralsListener = l; }
-    public void setLoadPrescriptionsListener(Runnable l) { this.loadPrescriptionsListener = l; }
-    public void setLoadAppointmentsListener(Runnable l) { this.loadAppointmentsListener = l; }
+    public void setBackToRoleSelectListener(BackToRoleSelectListener l) {
+        this.backToRoleSelectListener = l;
+    }
 
-    public void setCreateReferralListener(Runnable l) { this.createReferralListener = l; }
-    public void setCreatePrescriptionListener(Runnable l) { this.createPrescriptionListener = l; }
-    public void setCreateAppointmentListener(Runnable l) { this.createAppointmentListener = l; }
+    public void setLoadPatientsListener(Runnable l) {
+        this.loadPatientsListener = l;
+    }
 
-    public void setEditReferralListener(Runnable l) { this.editReferralListener = l; }
-    public void setEditPrescriptionListener(Runnable l) { this.editPrescriptionListener = l; }
-    public void setEditAppointmentListener(Runnable l) { this.editAppointmentListener = l; }
+    public void setLoadReferralsListener(Runnable l) {
+        this.loadReferralsListener = l;
+    }
 
-    public void setCancelAppointmentListener(Runnable l) { this.cancelAppointmentListener = l; }
+    public void setLoadPrescriptionsListener(Runnable l) {
+        this.loadPrescriptionsListener = l;
+    }
 
-    public void setPrintSelectedReferralListener(Runnable l) { this.printSelectedReferralListener = l; }
-    public void setPrintSelectedPrescriptionListener(Runnable l) { this.printSelectedPrescriptionListener = l; }
+    public void setLoadAppointmentsListener(Runnable l) {
+        this.loadAppointmentsListener = l;
+    }
 
-    public void setOnCloseListener(Runnable l) { this.onCloseListener = l; }
+    public void setCreateReferralListener(Runnable l) {
+        this.createReferralListener = l;
+    }
+
+    public void setCreatePrescriptionListener(Runnable l) {
+        this.createPrescriptionListener = l;
+    }
+
+    public void setCreateAppointmentListener(Runnable l) {
+        this.createAppointmentListener = l;
+    }
+
+    public void setEditReferralListener(Runnable l) {
+        this.editReferralListener = l;
+    }
+
+    public void setEditPrescriptionListener(Runnable l) {
+        this.editPrescriptionListener = l;
+    }
+
+    public void setEditAppointmentListener(Runnable l) {
+        this.editAppointmentListener = l;
+    }
+
+    public void setCancelAppointmentListener(Runnable l) {
+        this.cancelAppointmentListener = l;
+    }
+
+    public void setPrintSelectedReferralListener(Runnable l) {
+        this.printSelectedReferralListener = l;
+    }
+
+    public void setPrintSelectedPrescriptionListener(Runnable l) {
+        this.printSelectedPrescriptionListener = l;
+    }
+
+    public void setOnCloseListener(Runnable l) {
+        this.onCloseListener = l;
+    }
 
     // table selection helpers
 
@@ -396,7 +475,7 @@ public class HmsView extends JFrame {
         for (int i = 0; i < patients.size(); i++) {
             Patient patient = patients.get(i);
 
-            tableModel.addRow(new Object[] {
+            tableModel.addRow(new Object[]{
                     patient.getPatientId(),
                     patient.getFirstName(),
                     patient.getLastName(),
@@ -418,26 +497,41 @@ public class HmsView extends JFrame {
     }
 
     public void showReferrals(List<Referral> referrals) {
-        String[] columns = {"Referral ID" , "Patient ID", "Referring Clinician ID", "Referred To Clinician ID"," "+
-                "Referring Facility ID", "Referred To Facility ID", "Referral Date", "Urgency Level", "Referral Reason"," "+
-                "Clinical Summary", "Requested Investigations", "Status", "Appointment ID", "Notes", "Created Date"," "+
+        showReferrals(referrals, null);
+    }
+
+    public void showReferrals(List<Referral> referrals, HmsModel model) {
+        String[] columns = {"Referral ID", "Patient ID", "Referring Clinician ID", "Referred To Clinician ID", " " +
+                "Referring Facility ID", "Referred To Facility ID", "Referral Date", "Urgency Level", "Referral Reason", " " +
+                "Clinical Summary", "Requested Investigations", "Status", "Appointment ID", "Notes", "Created Date", " " +
                 "Last Updated"};
         DefaultTableModel tableModel = new DefaultTableModel(columns, 0);
 
         for (int i = 0; i < referrals.size(); i++) {
             Referral referral = referrals.get(i);
-            tableModel.addRow(new Object[]{ referral.getReferralId(), referral.getPatientId(),
-                    referral.getReferringClinicianId(), referral.getReferredToClinicianId(), referral.getReferringFacilityId(),
-                    referral.getReferredToFacilityId(), referral.getReferralDate(), referral.getUrgencyLevel(),
+
+            String patientLabel = (model == null) ? referral.getPatientId() : model.formatPatientLabel(referral.getPatientId());
+            String fromClinician = (model == null) ? referral.getReferringClinicianId() : model.formatClinicianLabel(referral.getReferringClinicianId());
+            String toClinician = (model == null) ? referral.getReferredToClinicianId() : model.formatClinicianLabel(referral.getReferredToClinicianId());
+            String fromFacility = (model == null) ? referral.getReferringFacilityId() : model.formatFacilityLabel(referral.getReferringFacilityId());
+            String toFacility = (model == null) ? referral.getReferredToFacilityId() : model.formatFacilityLabel(referral.getReferredToFacilityId());
+
+            tableModel.addRow(new Object[]{referral.getReferralId(), patientLabel,
+                    fromClinician, toClinician, fromFacility,
+                    toFacility, referral.getReferralDate(), referral.getUrgencyLevel(),
                     referral.getReferralReason(), referral.getClinicalSummary(), referral.getRequestedInvestigations(),
                     referral.getStatus(), referral.getAppointmentId(), referral.getNotes(), referral.getCreatedDate(),
-                    referral.getLastUpdated() });
+                    referral.getLastUpdated()});
         }
 
         mainTable.setModel(tableModel);
     }
 
     public void showPrescriptions(List<Prescription> prescriptions) {
+        showPrescriptions(prescriptions, null);
+    }
+
+    public void showPrescriptions(List<Prescription> prescriptions, HmsModel model) {
         String[] columns = {"Prescription ID", "Patient ID", "Clinician ID", "Appointment ID", "Prescription Date",
                 "Medication Name", "Dosage", "Frequency", "Duration Days", "Quantity", "Instructions",
                 "Pharmacy Name", "Status", "Issue Date", "Collection Date"};
@@ -445,35 +539,49 @@ public class HmsView extends JFrame {
 
         for (int i = 0; i < prescriptions.size(); i++) {
             Prescription prescription = prescriptions.get(i);
-            tableModel.addRow(new Object[]{ prescription.getPrescriptionId(), prescription.getPatientId(),
-                    prescription.getClinicianId(), prescription.getAppointmentId(), prescription.getPrescriptionDate(),
+
+            String patientLabel = (model == null) ? prescription.getPatientId() : model.formatPatientLabel(prescription.getPatientId());
+            String clinicianLabel = (model == null) ? prescription.getClinicianId() : model.formatClinicianLabel(prescription.getClinicianId());
+
+            tableModel.addRow(new Object[]{prescription.getPrescriptionId(), patientLabel,
+                    clinicianLabel, prescription.getAppointmentId(), prescription.getPrescriptionDate(),
                     prescription.getMedicationName(), prescription.getDosage(), prescription.getFrequency(),
                     prescription.getDurationDays(), prescription.getQuantity(), prescription.getInstructions(),
                     prescription.getPharmacyName(), prescription.getPrescriptionStatus(), prescription.getIssueDate(),
-                    prescription.getCollectionDate() });
+                    prescription.getCollectionDate()});
         }
 
         mainTable.setModel(tableModel);
     }
 
     public void showAppointments(List<Appointment> appointments) {
+        showAppointments(appointments, null);
+    }
+
+    public void showAppointments(List<Appointment> appointments, HmsModel model) {
         String[] columns = {"Appointment ID", "Patient ID", "Clinician ID", "Facility ID", "Appointment Date",
                 "Time", "Duration", "Appointment Type", "Status", "Reason For Visit", "Notes", "Created Date",
-                "Last Modified" };
+                "Last Modified"};
 
         DefaultTableModel tableModel = new DefaultTableModel(columns, 0);
 
         for (int i = 0; i < appointments.size(); i++) {
             Appointment appointment = appointments.get(i);
-            tableModel.addRow(new Object[]{ appointment.getAppointmentId(), appointment.getPatientId(),
-                    appointment.getClinicianId(), appointment.getFacilityId(), appointment.getAppointmentDate(),
+
+            String patientLabel = (model == null) ? appointment.getPatientId() : model.formatPatientLabel(appointment.getPatientId());
+            String clinicianLabel = (model == null) ? appointment.getClinicianId() : model.formatClinicianLabel(appointment.getClinicianId());
+            String facilityLabel = (model == null) ? appointment.getFacilityId() : model.formatFacilityLabel(appointment.getFacilityId());
+
+            tableModel.addRow(new Object[]{appointment.getAppointmentId(), patientLabel,
+                    clinicianLabel, facilityLabel, appointment.getAppointmentDate(),
                     appointment.getAppointmentTime(), appointment.getDurationMinutes(), appointment.getAppointmentType(),
                     appointment.getStatus(), appointment.getReasonForVisit(), appointment.getNotes(), appointment.getCreatedDate(),
-                    appointment.getLastModified() });
+                    appointment.getLastModified()});
         }
 
         mainTable.setModel(tableModel);
     }
+
 
     // advice messages to assist the user
 
@@ -481,21 +589,40 @@ public class HmsView extends JFrame {
         String patientId = JOptionPane.showInputDialog(this, "Enter Patient ID (e.g. P001):");
         if (patientId == null) return null;
 
-        String facilityId = JOptionPane.showInputDialog(this, "Enter Facility ID (e.g. F001):");
-        if (facilityId == null) return null;
+        String referringFacilityId = JOptionPane.showInputDialog(this, "Enter Referring Facility ID (e.g. F001):");
+        if (referringFacilityId == null) return null;
 
-        String urgency = JOptionPane.showInputDialog(this, "Enter Urgency Level (1=Low, 2=Medium, 3=High):");
+        String referredToFacilityId = JOptionPane.showInputDialog(this, "Enter Referred To Facility ID (e.g. F002):");
+        if (referredToFacilityId == null) return null;
+
+        String referringClinicianId = JOptionPane.showInputDialog(this, "Enter Referring Clinician ID (e.g. C001):");
+        if (referringClinicianId == null) return null;
+
+        String referredToClinicianId = JOptionPane.showInputDialog(this, "Enter Referred To Clinician ID (e.g. C008):");
+        if (referredToClinicianId == null) return null;
+
+        String urgency = JOptionPane.showInputDialog(this, "Enter Urgency Level (Routine, Non-urgent, Urgent):");
         if (urgency == null) return null;
+
+        String reason = JOptionPane.showInputDialog(this, "Enter Referral Reason:");
+        if (reason == null) return null;
 
         String summary = JOptionPane.showInputDialog(this, "Enter Clinical Summary:");
         if (summary == null) return null;
 
-        return new ReferralInput(patientId.trim(), facilityId.trim(), urgency.trim(), summary.trim());
+        return new ReferralInput(patientId.trim(), referringFacilityId.trim(), referredToFacilityId.trim(),
+                referringClinicianId.trim(), referredToClinicianId.trim(), urgency.trim(), reason.trim(), summary.trim());
     }
 
     public PrescriptionInput promptForPrescription() {
         String patientId = JOptionPane.showInputDialog(this, "Enter Patient ID (e.g. P001):");
         if (patientId == null) return null;
+
+        String clinicianId = JOptionPane.showInputDialog(this, "Enter Clinician ID (e.g. C008):");
+        if (clinicianId == null) return null;
+
+        String appointmentId = JOptionPane.showInputDialog(this, "Enter Appointment ID (optional, e.g. AP001):");
+        if (appointmentId == null) appointmentId = "";
 
         String medicationName = JOptionPane.showInputDialog(this, "Enter Medication Name:");
         if (medicationName == null) return null;
@@ -503,11 +630,11 @@ public class HmsView extends JFrame {
         String pharmacyName = JOptionPane.showInputDialog(this, "Enter Pharmacy Name:");
         if (pharmacyName == null) return null;
 
-        String status = JOptionPane.showInputDialog(this, "Enter Status (e.g. NEW/ISSUED):");
+        String status = JOptionPane.showInputDialog(this, "Enter Status (Draft, Issued, Dispensed, Collected, Cancelled):");
         if (status == null) return null;
-        if (status.trim().isEmpty()) status = "NEW";
 
-        return new PrescriptionInput(patientId.trim(), medicationName.trim(), pharmacyName.trim(), status.trim());
+        return new PrescriptionInput(patientId.trim(), clinicianId.trim(), appointmentId.trim(),
+                medicationName.trim(), pharmacyName.trim(), status.trim());
     }
 
     public AppointmentInput promptForAppointment() {
@@ -525,26 +652,50 @@ public class HmsView extends JFrame {
 
     public static class ReferralInput {
         public String patientId;
-        public String facilityId;
+        public String referringFacilityId;
+        public String referredToFacilityId;
+        public String referringClinicianId;
+        public String referredToClinicianId;
         public String urgency;
+        public String reason;
         public String summary;
 
-        public ReferralInput(String patientId, String facilityId, String urgency, String summary) {
+        public ReferralInput(String patientId,
+                             String referringFacilityId,
+                             String referredToFacilityId,
+                             String referringClinicianId,
+                             String referredToClinicianId,
+                             String urgency,
+                             String reason,
+                             String summary) {
             this.patientId = patientId;
-            this.facilityId = facilityId;
+            this.referringFacilityId = referringFacilityId;
+            this.referredToFacilityId = referredToFacilityId;
+            this.referringClinicianId = referringClinicianId;
+            this.referredToClinicianId = referredToClinicianId;
             this.urgency = urgency;
+            this.reason = reason;
             this.summary = summary;
         }
     }
 
     public static class PrescriptionInput {
         public String patientId;
+        public String clinicianId;
+        public String appointmentId;
         public String medicationName;
         public String pharmacyName;
         public String status;
 
-        public PrescriptionInput(String patientId, String medicationName, String pharmacyName, String status) {
+        public PrescriptionInput(String patientId,
+                                 String clinicianId,
+                                 String appointmentId,
+                                 String medicationName,
+                                 String pharmacyName,
+                                 String status) {
             this.patientId = patientId;
+            this.clinicianId = clinicianId;
+            this.appointmentId = appointmentId;
             this.medicationName = medicationName;
             this.pharmacyName = pharmacyName;
             this.status = status;
