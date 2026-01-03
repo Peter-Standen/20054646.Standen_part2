@@ -3,7 +3,7 @@ import javax.swing.table.DefaultTableModel;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.util.List;
+import java.util.ArrayList;
 
 /**
  * View class for the Healthcare Management System
@@ -13,77 +13,52 @@ public class HmsView extends JFrame {
     private HmsController controller;
     private JTabbedPane tabbedPane;
 
-    // ===== Listener References =====
+    // Patients panel components
+    private JTable patientsTable;
+    private DefaultTableModel patientsTableModel;
 
-    // Navigation listeners
-    private SelectRoleListener selectRoleListener;
-    private BackToRoleSelectListener backToRoleSelectListener;
+    // Referrals panel components
+    private JTable referralsTable;
+    private DefaultTableModel referralsTableModel;
 
-    // Load listeners
-    private Runnable loadPatientsListener;
-    private Runnable loadReferralsListener;
-    private Runnable loadPrescriptionsListener;
-    private Runnable loadAppointmentsListener;
+    // Prescriptions panel components
+    private JTable prescriptionsTable;
+    private DefaultTableModel prescriptionsTableModel;
 
-    // Create listeners
-    private Runnable createReferralListener;
-    private Runnable createPrescriptionListener;
-    private Runnable createAppointmentListener;
+    // Appointments panel components
+    private JTable appointmentsTable;
+    private DefaultTableModel appointmentsTableModel;
 
-    // Edit listener
-    private Runnable editReferralListener;
-    private Runnable editPrescriptionListener;
-    private Runnable editAppointmentListener;
+    // Stored role (used only to control which tabs are visible)
+    private String currentRole = "";
 
-    // Cancel listener
-    private Runnable cancelAppointmentListener;
+    // Listener References
 
-    // Print selected record listeners (consultant)
-    private Runnable printSelectedReferralListener;
-    private Runnable printSelectedPrescriptionListener;
+    // Refresh/load listeners
+    private Runnable refreshPatientsListener;
+    private Runnable refreshReferralsListener;
+    private Runnable refreshPrescriptionsListener;
+    private Runnable refreshAppointmentsListener;
 
-    // Window close
+    // Create listeners (Bookshop style: view collects input and passes it)
+    private CreateReferralListener createReferralListener;
+    private CreatePrescriptionListener createPrescriptionListener;
+    private CreateAppointmentListener createAppointmentListener;
+
+    // Update/edit listeners (Bookshop style: view prompts and passes result)
+    private UpdateReferralListener updateReferralListener;
+    private UpdatePrescriptionListener updatePrescriptionListener;
+    private UpdateAppointmentListener updateAppointmentListener;
+
+    // Cancel listener (appointment)
+    private CancelAppointmentListener cancelAppointmentListener;
+
+    // Print listeners (consultant)
+    private PrintReferralListener printReferralListener;
+    private PrintPrescriptionListener printPrescriptionListener;
+
+    // Close listener
     private Runnable onCloseListener;
-
-    // UI layout
-    private CardLayout cardLayout;
-    private JPanel cards;
-    private JTable mainTable;
-
-    // Role buttons
-    private JButton adminRoleButton;
-    private JButton consultantRoleButton;
-    private JButton patientRoleButton;
-
-    // Admin buttons
-    private JButton adminLoadPatientsButton;
-    private JButton adminLoadReferralsButton;
-    private JButton adminLoadPrescriptionsButton;
-    private JButton adminLoadAppointmentsButton;
-    private JButton adminCreateAppointmentButton;
-    private JButton adminEditAppointmentButton;
-    private JButton adminCancelAppointmentButton;
-    private JButton adminEditReferralButton;
-    private JButton adminBackButton;
-
-    // Consultant buttons
-    private JButton consultantLoadReferralsButton;
-    private JButton consultantCreateReferralButton;
-    private JButton consultantPrintReferralButton;
-    private JButton consultantEditReferralButton;
-    private JButton consultantLoadPrescriptionButton;
-    private JButton consultantCreatePrescriptionButton;
-    private JButton consultantPrintPrescriptionButton;
-    private JButton consultantEditPrescriptionButton;
-    private JButton consultantBackButton;
-
-    // Patient buttons
-    private JButton patientLoadPrescriptionsButton;
-    private JButton patientLoadAppointmentsButton;
-    private JButton patientCreateAppointmentButton;
-    private JButton patientEditAppointmentButton;
-    private JButton patientCancelAppointmentButton;
-    private JButton patientBackButton;
 
     public HmsView() {
         setTitle("Healthcare Management System - MVC Architecture");
@@ -92,390 +67,115 @@ public class HmsView extends JFrame {
         setLocationRelativeTo(null);
 
         initComponents();
-        wireWindowClose(); // important: matches bookshop "on close" behaviour
     }
 
     public void setController(HmsController controller) {
         this.controller = controller;
-        showRoleSelectView();
+        // I needed to make a sligh adaption here, while the bookshopView loads Books/Authors on setController,
+        // HMS does not auto-load, allowing for user selection.
     }
 
     private void initComponents() {
-        setLayout(new BorderLayout());
+        tabbedPane = new JTabbedPane();
 
-        cardLayout = new CardLayout();
-        cards = new JPanel(cardLayout);
+        // Default: show everything until a role is applied
+        tabbedPane.addTab("Patients", createPatientsPanel());
+        tabbedPane.addTab("Referrals", createReferralsPanel());
+        tabbedPane.addTab("Prescriptions", createPrescriptionsPanel());
+        tabbedPane.addTab("Appointments", createAppointmentsPanel());
 
-        cards.add(buildRoleSelectPanel(), "ROLE_SELECT");
-        cards.add(buildAdminPanel(), "ADMIN");
-        cards.add(buildConsultantPanel(), "CONSULTANT");
-        cards.add(buildPatientPanel(), "PATIENT");
+        add(tabbedPane);
 
-        add(cards, BorderLayout.NORTH);
-
-        mainTable = new JTable();
-        mainTable.setModel(new DefaultTableModel(new Object[][]{}, new String[]{}));
-        add(new JScrollPane(mainTable), BorderLayout.CENTER);
-    }
-
-    private JPanel buildRoleSelectPanel() {
-        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-
-        buttonsPanel.add(new JLabel("Select User View:"));
-
-        adminRoleButton = new JButton("Administrator");
-        consultantRoleButton = new JButton("Consultant");
-        patientRoleButton = new JButton("Patient");
-
-        buttonsPanel.add(adminRoleButton);
-        buttonsPanel.add(consultantRoleButton);
-        buttonsPanel.add(patientRoleButton);
-
-        adminRoleButton.addActionListener(e -> {
-            if (selectRoleListener != null) selectRoleListener.onSelectRole("ADMIN");
-        });
-        consultantRoleButton.addActionListener(e -> {
-            if (selectRoleListener != null) selectRoleListener.onSelectRole("CONSULTANT");
-        });
-        patientRoleButton.addActionListener(e -> {
-            if (selectRoleListener != null) selectRoleListener.onSelectRole("PATIENT");
-        });
-
-        return buttonsPanel;
-    }
-
-    private JPanel buildAdminPanel() {
-        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-
-        buttonsPanel.add(new JLabel("Admin View"));
-
-        adminLoadPatientsButton = new JButton("Load Patients");
-        adminLoadReferralsButton = new JButton("Load Referrals");
-        adminEditReferralButton = new JButton("Edit Referral");
-        adminLoadPrescriptionsButton = new JButton("Load Prescriptions");
-        adminLoadAppointmentsButton = new JButton("Load Appointments");
-        adminCreateAppointmentButton = new JButton("Create Appointment");
-        adminEditAppointmentButton = new JButton("Edit Appointment");
-        adminCancelAppointmentButton = new JButton("Cancel Appointment");
-        adminBackButton = new JButton("Back");
-
-        buttonsPanel.add(adminLoadPatientsButton);
-        buttonsPanel.add(adminLoadReferralsButton);
-        buttonsPanel.add(adminEditReferralButton);
-        buttonsPanel.add(adminLoadPrescriptionsButton);
-        buttonsPanel.add(adminLoadAppointmentsButton);
-        buttonsPanel.add(adminCreateAppointmentButton);
-        buttonsPanel.add(adminEditAppointmentButton);
-        buttonsPanel.add(adminCancelAppointmentButton);
-        buttonsPanel.add(adminBackButton);
-
-        adminLoadPatientsButton.addActionListener(e -> {
-            if (loadPatientsListener != null) loadPatientsListener.run();
-        });
-        adminLoadReferralsButton.addActionListener(e -> {
-            if (loadReferralsListener != null) loadReferralsListener.run();
-        });
-        adminEditReferralButton.addActionListener(e -> {
-            if (!hasSelectedRow()) {
-                showSelectRowMessage();
-                return;
-            }
-            if (editReferralListener != null) editReferralListener.run();
-        });
-
-        adminLoadPrescriptionsButton.addActionListener(e -> {
-            if (loadPrescriptionsListener != null) loadPrescriptionsListener.run();
-        });
-
-        adminLoadAppointmentsButton.addActionListener(e -> {
-            if (loadAppointmentsListener != null) loadAppointmentsListener.run();
-        });
-        adminCreateAppointmentButton.addActionListener(e -> {
-            if (createAppointmentListener != null) createAppointmentListener.run();
-        });
-        adminEditAppointmentButton.addActionListener(e -> {
-            if (!hasSelectedRow()) {
-                showSelectRowMessage();
-                return;
-            }
-            if (editAppointmentListener != null) editAppointmentListener.run();
-        });
-        adminCancelAppointmentButton.addActionListener(e -> {
-            if (!hasSelectedRow()) {
-                showSelectRowMessage();
-                return;
-            }
-            if (cancelAppointmentListener != null) cancelAppointmentListener.run();
-        });
-
-        adminBackButton.addActionListener(e -> {
-            if (backToRoleSelectListener != null) backToRoleSelectListener.onBack();
-        });
-
-        return buttonsPanel;
-    }
-
-    private JPanel buildConsultantPanel() {
-        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        buttonsPanel.add(new JLabel("Consultant View"));
-
-        consultantLoadReferralsButton = new JButton("Load Referrals");
-        consultantCreateReferralButton = new JButton("Create Referral");
-        consultantEditReferralButton = new JButton("Edit Referral");
-        consultantPrintReferralButton = new JButton("Print Referral to File");
-        consultantLoadPrescriptionButton = new JButton("Load Prescription");
-        consultantCreatePrescriptionButton = new JButton("Create Prescription");
-        consultantEditPrescriptionButton = new JButton("Edit Prescription");
-        consultantPrintPrescriptionButton = new JButton("Print Prescription to File");
-        consultantBackButton = new JButton("Back");
-
-        buttonsPanel.add(consultantLoadReferralsButton);
-        buttonsPanel.add(consultantCreateReferralButton);
-        buttonsPanel.add(consultantEditReferralButton);
-        buttonsPanel.add(consultantPrintReferralButton);
-        buttonsPanel.add(consultantLoadPrescriptionButton);
-        buttonsPanel.add(consultantCreatePrescriptionButton);
-        buttonsPanel.add(consultantEditPrescriptionButton);
-        buttonsPanel.add(consultantPrintPrescriptionButton);
-        buttonsPanel.add(consultantBackButton);
-
-        consultantLoadReferralsButton.addActionListener(e -> {
-            if (loadReferralsListener != null) loadReferralsListener.run();
-        });
-        consultantCreateReferralButton.addActionListener(e -> {
-            if (createReferralListener != null) createReferralListener.run();
-        });
-        consultantEditReferralButton.addActionListener(e -> {
-            if (!hasSelectedRow()) {
-                showSelectRowMessage();
-                return;
-            }
-            if (editReferralListener != null) editReferralListener.run();
-        });
-        consultantPrintReferralButton.addActionListener(e -> {
-            if (!hasSelectedRow()) {
-                showSelectRowMessage();
-                return;
-            }
-            if (printSelectedReferralListener != null) printSelectedReferralListener.run();
-        });
-
-        consultantLoadPrescriptionButton.addActionListener(e -> {
-            if (loadPrescriptionsListener != null) loadPrescriptionsListener.run();
-        });
-        consultantCreatePrescriptionButton.addActionListener(e -> {
-            if (createPrescriptionListener != null) createPrescriptionListener.run();
-        });
-        consultantEditPrescriptionButton.addActionListener(e -> {
-            if (!hasSelectedRow()) {
-                showSelectRowMessage();
-                return;
-            }
-            if (editPrescriptionListener != null) editPrescriptionListener.run();
-        });
-        consultantPrintPrescriptionButton.addActionListener(e -> {
-            if (!hasSelectedRow()) {
-                showSelectRowMessage();
-                return;
-            }
-            if (printSelectedPrescriptionListener != null) printSelectedPrescriptionListener.run();
-        });
-
-        consultantBackButton.addActionListener(e -> {
-            if (backToRoleSelectListener != null) backToRoleSelectListener.onBack();
-        });
-
-        return buttonsPanel;
-    }
-
-    private JPanel buildPatientPanel() {
-        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-
-        buttonsPanel.add(new JLabel("Patient View"));
-
-        patientLoadPrescriptionsButton = new JButton("Load Prescriptions");
-        patientLoadAppointmentsButton = new JButton("Load Appointments");
-        patientCreateAppointmentButton = new JButton("Create Appointment");
-        patientEditAppointmentButton = new JButton("Edit Appointment");
-        patientCancelAppointmentButton = new JButton("Cancel Appointment");
-        patientBackButton = new JButton("Back");
-
-        buttonsPanel.add(patientLoadPrescriptionsButton);
-        buttonsPanel.add(patientLoadAppointmentsButton);
-        buttonsPanel.add(patientCreateAppointmentButton);
-        buttonsPanel.add(patientEditAppointmentButton);
-        buttonsPanel.add(patientCancelAppointmentButton);
-        buttonsPanel.add(patientBackButton);
-
-        patientLoadPrescriptionsButton.addActionListener(e -> {
-            if (loadPrescriptionsListener != null) loadPrescriptionsListener.run();
-        });
-        patientLoadAppointmentsButton.addActionListener(e -> {
-            if (loadAppointmentsListener != null) loadAppointmentsListener.run();
-        });
-        patientCreateAppointmentButton.addActionListener(e -> {
-            if (createAppointmentListener != null) createAppointmentListener.run();
-        });
-        patientEditAppointmentButton.addActionListener(e -> {
-            if (!hasSelectedRow()) {
-                showSelectRowMessage();
-                return;
-            }
-            if (editAppointmentListener != null) editAppointmentListener.run();
-        });
-        patientCancelAppointmentButton.addActionListener(e -> {
-            if (!hasSelectedRow()) {
-                showSelectRowMessage();
-                return;
-            }
-            if (cancelAppointmentListener != null) cancelAppointmentListener.run();
-        });
-
-        patientBackButton.addActionListener(e -> {
-            if (backToRoleSelectListener != null) backToRoleSelectListener.onBack();
-        });
-
-        return buttonsPanel;
-    }
-
-    private void wireWindowClose() {
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
-                if (onCloseListener != null) onCloseListener.run();
-                System.exit(0);
+                if (onCloseListener != null) {
+                    onCloseListener.run();
+                }
             }
         });
     }
 
-    // navigation helpers
+    // I have introduced role handling with tabs invisible by removal
+    public void applyRole(String role) {
+        if (role == null) role = "";
+        currentRole = role.trim().toUpperCase();
 
-    public void showRoleSelectView() {
-        cardLayout.show(cards, "ROLE_SELECT");
+        // Rebuild tabs in a deterministic order
+        tabbedPane.removeAll();
+
+        if ("ADMIN".equals(currentRole)) {
+            tabbedPane.addTab("Patients", createPatientsPanel());
+            tabbedPane.addTab("Referrals", createReferralsPanel());
+            tabbedPane.addTab("Prescriptions", createPrescriptionsPanel());
+            tabbedPane.addTab("Appointments", createAppointmentsPanel());
+        } else if ("CONSULTANT".equals(currentRole)) {
+            tabbedPane.addTab("Referrals", createReferralsPanel());
+            tabbedPane.addTab("Prescriptions", createPrescriptionsPanel());
+            tabbedPane.addTab("Appointments", createAppointmentsPanel());
+        } else if ("PATIENT".equals(currentRole)) {
+            tabbedPane.addTab("Prescriptions", createPrescriptionsPanel());
+            tabbedPane.addTab("Appointments", createAppointmentsPanel());
+        } else {
+            // Unknown role, show everything (safe fallback)
+            tabbedPane.addTab("Patients", createPatientsPanel());
+            tabbedPane.addTab("Referrals", createReferralsPanel());
+            tabbedPane.addTab("Prescriptions", createPrescriptionsPanel());
+            tabbedPane.addTab("Appointments", createAppointmentsPanel());
+        }
+
+        // Force layout refresh
+        revalidate();
+        repaint();
     }
 
-    public void showAdminView() {
-        cardLayout.show(cards, "ADMIN");
-    }
+    // ========== Patient Panel ==========
+    private JPanel createPatientsPanel() {
+        JPanel panel = new JPanel(new BorderLayout(10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-    public void showConsultantView() {
-        cardLayout.show(cards, "CONSULTANT");
-    }
+        JLabel titleLabel = new JLabel("Patients");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        panel.add(titleLabel, BorderLayout.NORTH);
 
-    public void showPatientView() {
-        cardLayout.show(cards, "PATIENT");
-    }
-
-    // listener setters
-    public void setSelectRoleListener(SelectRoleListener l) {
-        this.selectRoleListener = l;
-    }
-
-    public void setBackToRoleSelectListener(BackToRoleSelectListener l) {
-        this.backToRoleSelectListener = l;
-    }
-
-    public void setLoadPatientsListener(Runnable l) {
-        this.loadPatientsListener = l;
-    }
-
-    public void setLoadReferralsListener(Runnable l) {
-        this.loadReferralsListener = l;
-    }
-
-    public void setLoadPrescriptionsListener(Runnable l) {
-        this.loadPrescriptionsListener = l;
-    }
-
-    public void setLoadAppointmentsListener(Runnable l) {
-        this.loadAppointmentsListener = l;
-    }
-
-    public void setCreateReferralListener(Runnable l) {
-        this.createReferralListener = l;
-    }
-
-    public void setCreatePrescriptionListener(Runnable l) {
-        this.createPrescriptionListener = l;
-    }
-
-    public void setCreateAppointmentListener(Runnable l) {
-        this.createAppointmentListener = l;
-    }
-
-    public void setEditReferralListener(Runnable l) {
-        this.editReferralListener = l;
-    }
-
-    public void setEditPrescriptionListener(Runnable l) {
-        this.editPrescriptionListener = l;
-    }
-
-    public void setEditAppointmentListener(Runnable l) {
-        this.editAppointmentListener = l;
-    }
-
-    public void setCancelAppointmentListener(Runnable l) {
-        this.cancelAppointmentListener = l;
-    }
-
-    public void setPrintSelectedReferralListener(Runnable l) {
-        this.printSelectedReferralListener = l;
-    }
-
-    public void setPrintSelectedPrescriptionListener(Runnable l) {
-        this.printSelectedPrescriptionListener = l;
-    }
-
-    public void setOnCloseListener(Runnable l) {
-        this.onCloseListener = l;
-    }
-
-    // table selection helpers
-
-    private boolean hasSelectedRow() {
-        return mainTable != null && mainTable.getSelectedRow() >= 0;
-    }
-
-    private void showSelectRowMessage() {
-        JOptionPane.showMessageDialog(this,
-                "Please select a row in the table first.",
-                "No selection",
-                JOptionPane.INFORMATION_MESSAGE);
-    }
-
-    public String getSelectedIdFromTable(int idColumnIndex) {
-        if (!hasSelectedRow()) return null;
-        int row = mainTable.getSelectedRow();
-        Object variable = mainTable.getValueAt(row, idColumnIndex);
-        return variable == null ? null : variable.toString();
-    }
-
-    public int getTableColumnCount() {
-        if (mainTable == null || mainTable.getModel() == null) return 0;
-        return mainTable.getModel().getColumnCount();
-    }
-
-    public String getTableColumnName(int index) {
-        if (mainTable == null || mainTable.getModel() == null) return null;
-        if (index < 0 || index >= mainTable.getModel().getColumnCount()) return null;
-        return mainTable.getModel().getColumnName(index);
-    }
-
-    // table displays
-
-    public void showPatients(List<Patient> patients) {
-        String[] columns = {
-                "Patient ID", "First Name", "Last Name", "DOB", "NHS No", "Gender",
-                "Phone", "Email", "Address", "Postcode", "Emergency Name",
-                "Emergency Phone", "Registration Date", "GP Surgery ID"
+        String[] columns = { "Patient ID", "First Name", "Last Name", "DOB", "NHS No", "Gender", "Phone", "Email",
+                "Address", "Postcode", "Emergency Name", "Emergency Phone", "Registration Date", "GP Surgery ID"
         };
 
-        DefaultTableModel tableModel = new DefaultTableModel(columns, 0);
+        patientsTableModel = new DefaultTableModel(columns, 0) {
+            public boolean isCellEditable(int row, int column) { return false; }
+        };
+
+        patientsTable = new JTable(patientsTableModel);
+        JScrollPane scrollPane = new JScrollPane(patientsTable);
+        panel.add(scrollPane, BorderLayout.CENTER);
+
+        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+
+        JButton refreshButton = new JButton("Refresh");
+        refreshButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (refreshPatientsListener != null) {
+                    refreshPatientsListener.run();
+                }
+            }
+        });
+
+        buttonsPanel.add(refreshButton);
+
+        panel.add(buttonsPanel, BorderLayout.SOUTH);
+
+        return panel;
+    }
+
+    public void refreshPatientsTable(ArrayList<Patient> patients, HmsModel model) {
+        if (patientsTableModel == null) return;
+
+        patientsTableModel.setRowCount(0);
 
         for (int i = 0; i < patients.size(); i++) {
             Patient patient = patients.get(i);
 
-            tableModel.addRow(new Object[]{
+            Object[] row = {
                     patient.getPatientId(),
                     patient.getFirstName(),
                     patient.getLastName(),
@@ -490,227 +190,775 @@ public class HmsView extends JFrame {
                     patient.getEmergencyContactPhone(),
                     patient.getRegistrationDate(),
                     patient.getGpSurgeryId()
-            });
+            };
+
+            patientsTableModel.addRow(row);
+        }
+    }
+
+    // ========== Referrals Panel ==========
+    private JPanel createReferralsPanel() {
+        JPanel panel = new JPanel(new BorderLayout(10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        JLabel titleLabel = new JLabel("Referrals");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        panel.add(titleLabel, BorderLayout.NORTH);
+
+        String[] columns = { "Referral ID", "Patient", "Referring Clinician", "Referred To Clinician",
+                "Referring Facility", "Referred To Facility", "Referral Date", "Urgency", "Reason", "Clinical Summary",
+                "Investigations", "Status", "Appointment ID", "Notes", "Created Date", "Last Updated"
+        };
+
+        referralsTableModel = new DefaultTableModel(columns, 0) {
+            public boolean isCellEditable(int row, int column) { return false; }
+        };
+
+        referralsTable = new JTable(referralsTableModel);
+        JScrollPane scrollPane = new JScrollPane(referralsTable);
+        panel.add(scrollPane, BorderLayout.CENTER);
+
+        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+
+        JButton refreshButton = new JButton("Refresh");
+        refreshButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (refreshReferralsListener != null) {
+                    refreshReferralsListener.run();
+                }
+            }
+        });
+
+        JButton createButton = new JButton("Create Referral");
+        createButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                showCreateReferralDialog();
+            }
+        });
+
+        JButton updateButton = new JButton("Update Status");
+        updateButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                showUpdateReferralDialog();
+            }
+        });
+
+        JButton printButton = new JButton("Print to File");
+        printButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                showPrintReferralDialog();
+            }
+        });
+
+        // This is role-based button visibility where I have introduced the different users
+        if ("PATIENT".equals(currentRole)) {
+            createButton.setVisible(false);
+            updateButton.setVisible(false);
+            printButton.setVisible(false);
+        }
+        if ("ADMIN".equals(currentRole)) {
+            createButton.setVisible(false); // admin creates appointments, consultant creates referrals
+            printButton.setVisible(false);
         }
 
-        mainTable.setModel(tableModel);
+        buttonsPanel.add(refreshButton);
+        buttonsPanel.add(createButton);
+        buttonsPanel.add(updateButton);
+        buttonsPanel.add(printButton);
+
+        panel.add(buttonsPanel, BorderLayout.SOUTH);
+
+        return panel;
     }
 
-    public void showReferrals(List<Referral> referrals) {
-        showReferrals(referrals, null);
-    }
+    public void refreshReferralsTable(ArrayList<Referral> referrals, HmsModel model) {
+        if (referralsTableModel == null) return;
 
-    public void showReferrals(List<Referral> referrals, HmsModel model) {
-        String[] columns = {"Referral ID", "Patient ID", "Referring Clinician ID", "Referred To Clinician ID", " " +
-                "Referring Facility ID", "Referred To Facility ID", "Referral Date", "Urgency Level", "Referral Reason", " " +
-                "Clinical Summary", "Requested Investigations", "Status", "Appointment ID", "Notes", "Created Date", " " +
-                "Last Updated"};
-        DefaultTableModel tableModel = new DefaultTableModel(columns, 0);
+        referralsTableModel.setRowCount(0);
 
         for (int i = 0; i < referrals.size(); i++) {
             Referral referral = referrals.get(i);
 
-            String patientLabel = (model == null) ? referral.getPatientId() : model.formatPatientLabel(referral.getPatientId());
-            String fromClinician = (model == null) ? referral.getReferringClinicianId() : model.formatClinicianLabel(referral.getReferringClinicianId());
-            String toClinician = (model == null) ? referral.getReferredToClinicianId() : model.formatClinicianLabel(referral.getReferredToClinicianId());
-            String fromFacility = (model == null) ? referral.getReferringFacilityId() : model.formatFacilityLabel(referral.getReferringFacilityId());
-            String toFacility = (model == null) ? referral.getReferredToFacilityId() : model.formatFacilityLabel(referral.getReferredToFacilityId());
+            String patient = safeLabelPatient(model, referral.getPatientId());
+            String fromClinician = safeLabelClinician(model, referral.getReferringClinicianId());
+            String toClinician = safeLabelClinician(model, referral.getReferredToClinicianId());
+            String fromFacility = safeLabelFacility(model, referral.getReferringFacilityId());
+            String toFacility = safeLabelFacility(model, referral.getReferredToFacilityId());
 
-            tableModel.addRow(new Object[]{referral.getReferralId(), patientLabel,
-                    fromClinician, toClinician, fromFacility,
-                    toFacility, referral.getReferralDate(), referral.getUrgencyLevel(),
-                    referral.getReferralReason(), referral.getClinicalSummary(), referral.getRequestedInvestigations(),
-                    referral.getStatus(), referral.getAppointmentId(), referral.getNotes(), referral.getCreatedDate(),
-                    referral.getLastUpdated()});
+            Object[] row = {
+                    referral.getReferralId(),
+                    patient,
+                    fromClinician,
+                    toClinician,
+                    fromFacility,
+                    toFacility,
+                    referral.getReferralDate(),
+                    referral.getUrgencyLevel(),
+                    referral.getReferralReason(),
+                    referral.getClinicalSummary(),
+                    referral.getRequestedInvestigations(),
+                    referral.getStatus(),
+                    referral.getAppointmentId(),
+                    referral.getNotes(),
+                    referral.getCreatedDate(),
+                    referral.getLastUpdated()
+            };
+
+            referralsTableModel.addRow(row);
+        }
+    }
+
+    private void showCreateReferralDialog() {
+        JDialog dialog = new JDialog(this, "Create Referral", true);
+        dialog.setSize(500, 350);
+        dialog.setLocationRelativeTo(this);
+
+        JPanel panel = new JPanel(new GridLayout(9, 2, 10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        JTextField patientIdField = new JTextField();
+        JTextField fromFacilityField = new JTextField();
+        JTextField toFacilityField = new JTextField();
+        JTextField fromClinicianField = new JTextField();
+        JTextField toClinicianField = new JTextField();
+        JTextField urgencyField = new JTextField();
+        JTextField reasonField = new JTextField();
+        JTextField summaryField = new JTextField();
+
+        panel.add(new JLabel("Patient ID (e.g. P001):"));
+        panel.add(patientIdField);
+
+        panel.add(new JLabel("Referring Facility ID (e.g. F001):"));
+        panel.add(fromFacilityField);
+
+        panel.add(new JLabel("Referred To Facility ID (e.g. F002):"));
+        panel.add(toFacilityField);
+
+        panel.add(new JLabel("Referring Clinician ID (e.g. C001):"));
+        panel.add(fromClinicianField);
+
+        panel.add(new JLabel("Referred To Clinician ID (e.g. C008):"));
+        panel.add(toClinicianField);
+
+        panel.add(new JLabel("Urgency (Routine/Non-urgent/Urgent):"));
+        panel.add(urgencyField);
+
+        panel.add(new JLabel("Reason:"));
+        panel.add(reasonField);
+
+        panel.add(new JLabel("Clinical Summary:"));
+        panel.add(summaryField);
+
+        JButton saveButton = new JButton("Save");
+        JButton cancelButton = new JButton("Cancel");
+
+        saveButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String patientId = patientIdField.getText().trim();
+                String fromFacility = fromFacilityField.getText().trim();
+                String toFacility = toFacilityField.getText().trim();
+                String fromClinician = fromClinicianField.getText().trim();
+                String toClinician = toClinicianField.getText().trim();
+                String urgency = urgencyField.getText().trim();
+                String reason = reasonField.getText().trim();
+                String summary = summaryField.getText().trim();
+
+                // I created just a single listener to create a warning to complete all fields.
+                if (patientId.isEmpty() || fromFacility.isEmpty() || toFacility.isEmpty()
+                        || fromClinician.isEmpty() || toClinician.isEmpty()
+                        || urgency.isEmpty() || reason.isEmpty() || summary.isEmpty()) {
+                    showErrorMessage("Please complete all fields");
+                    return;
+                }
+
+                if (createReferralListener != null) {
+                    createReferralListener.onCreateReferral(
+                            patientId, fromFacility, toFacility,
+                            fromClinician, toClinician,
+                            urgency, reason, summary
+                    );
+                }
+
+                dialog.dispose();
+            }
+        });
+
+        cancelButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose();
+            }
+        });
+
+        panel.add(saveButton);
+        panel.add(cancelButton);
+
+        dialog.add(panel);
+        dialog.setVisible(true);
+    }
+
+    private void showUpdateReferralDialog() {
+        int selectedRow = (referralsTable == null) ? -1 : referralsTable.getSelectedRow();
+        if (selectedRow == -1) {
+            showErrorMessage("Please select a referral to update");
+            return;
         }
 
-        mainTable.setModel(tableModel);
+        String referralId = referralsTable.getValueAt(selectedRow, 0).toString();
+        String currentStatus = referralsTable.getValueAt(selectedRow, 11) == null
+                ? ""
+                : referralsTable.getValueAt(selectedRow, 11).toString();
+
+        String input = JOptionPane.showInputDialog(
+                this,
+                "Enter new status for Referral " + referralId + ":",
+                currentStatus
+        );
+
+        if (input != null && !input.trim().isEmpty()) {
+            if (updateReferralListener != null) {
+                updateReferralListener.onUpdateReferralStatus(referralId, input.trim());
+            }
+        }
     }
 
-    public void showPrescriptions(List<Prescription> prescriptions) {
-        showPrescriptions(prescriptions, null);
+    private void showPrintReferralDialog() {
+        int selectedRow = (referralsTable == null) ? -1 : referralsTable.getSelectedRow();
+        if (selectedRow == -1) {
+            showErrorMessage("Please select a referral to print");
+            return;
+        }
+
+        String referralId = referralsTable.getValueAt(selectedRow, 0).toString();
+
+        if (printReferralListener != null) {
+            printReferralListener.onPrintReferral(referralId);
+        }
     }
 
-    public void showPrescriptions(List<Prescription> prescriptions, HmsModel model) {
-        String[] columns = {"Prescription ID", "Patient ID", "Clinician ID", "Appointment ID", "Prescription Date",
-                "Medication Name", "Dosage", "Frequency", "Duration Days", "Quantity", "Instructions",
-                "Pharmacy Name", "Status", "Issue Date", "Collection Date"};
-        DefaultTableModel tableModel = new DefaultTableModel(columns, 0);
+    // ========== Prescriptions Panel ==========
+    private JPanel createPrescriptionsPanel() {
+        JPanel panel = new JPanel(new BorderLayout(10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        JLabel titleLabel = new JLabel("Prescriptions");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        panel.add(titleLabel, BorderLayout.NORTH);
+
+        String[] columns = { "Prescription ID", "Patient", "Clinician", "Appointment ID", "Date", "Medication",
+                "Dosage", "Frequency", "Duration", "Quantity", "Instructions", "Pharmacy", "Status", "Issue Date",
+                "Collection Date"
+        };
+
+        prescriptionsTableModel = new DefaultTableModel(columns, 0) {
+            public boolean isCellEditable(int row, int column) { return false; }
+        };
+
+        prescriptionsTable = new JTable(prescriptionsTableModel);
+        JScrollPane scrollPane = new JScrollPane(prescriptionsTable);
+        panel.add(scrollPane, BorderLayout.CENTER);
+
+        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+
+        JButton refreshButton = new JButton("Refresh");
+        refreshButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (refreshPrescriptionsListener != null) {
+                    refreshPrescriptionsListener.run();
+                }
+            }
+        });
+
+        JButton createButton = new JButton("Create Prescription");
+        createButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                showCreatePrescriptionDialog();
+            }
+        });
+
+        JButton updateButton = new JButton("Update Status");
+        updateButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                showUpdatePrescriptionDialog();
+            }
+        });
+
+        JButton printButton = new JButton("Print to File");
+        printButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                showPrintPrescriptionDialog();
+            }
+        });
+
+        // Role-based button visibility
+        if ("PATIENT".equals(currentRole)) {
+            createButton.setVisible(false);
+            updateButton.setVisible(false);
+            printButton.setVisible(false);
+        }
+        if ("ADMIN".equals(currentRole)) {
+            createButton.setVisible(false);
+            printButton.setVisible(false);
+        }
+
+        buttonsPanel.add(refreshButton);
+        buttonsPanel.add(createButton);
+        buttonsPanel.add(updateButton);
+        buttonsPanel.add(printButton);
+
+        panel.add(buttonsPanel, BorderLayout.SOUTH);
+
+        return panel;
+    }
+
+    public void refreshPrescriptionsTable(ArrayList<Prescription> prescriptions, HmsModel model) {
+        if (prescriptionsTableModel == null) return;
+
+        prescriptionsTableModel.setRowCount(0);
 
         for (int i = 0; i < prescriptions.size(); i++) {
             Prescription prescription = prescriptions.get(i);
 
-            String patientLabel = (model == null) ? prescription.getPatientId() : model.formatPatientLabel(prescription.getPatientId());
-            String clinicianLabel = (model == null) ? prescription.getClinicianId() : model.formatClinicianLabel(prescription.getClinicianId());
+            String patient = safeLabelPatient(model, prescription.getPatientId());
+            String clinician = safeLabelClinician(model, prescription.getClinicianId());
 
-            tableModel.addRow(new Object[]{prescription.getPrescriptionId(), patientLabel,
-                    clinicianLabel, prescription.getAppointmentId(), prescription.getPrescriptionDate(),
-                    prescription.getMedicationName(), prescription.getDosage(), prescription.getFrequency(),
-                    prescription.getDurationDays(), prescription.getQuantity(), prescription.getInstructions(),
-                    prescription.getPharmacyName(), prescription.getPrescriptionStatus(), prescription.getIssueDate(),
-                    prescription.getCollectionDate()});
+            Object[] row = {
+                    prescription.getPrescriptionId(),
+                    patient,
+                    clinician,
+                    prescription.getAppointmentId(),
+                    prescription.getPrescriptionDate(),
+                    prescription.getMedicationName(),
+                    prescription.getDosage(),
+                    prescription.getFrequency(),
+                    prescription.getDurationDays(),
+                    prescription.getQuantity(),
+                    prescription.getInstructions(),
+                    prescription.getPharmacyName(),
+                    prescription.getPrescriptionStatus(),
+                    prescription.getIssueDate(),
+                    prescription.getCollectionDate()
+            };
+
+            prescriptionsTableModel.addRow(row);
+        }
+    }
+
+    private void showCreatePrescriptionDialog() {
+        JDialog dialog = new JDialog(this, "Create Prescription", true);
+        dialog.setSize(500, 300);
+        dialog.setLocationRelativeTo(this);
+
+        JPanel panel = new JPanel(new GridLayout(7, 2, 10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        JTextField patientIdField = new JTextField();
+        JTextField clinicianIdField = new JTextField();
+        JTextField appointmentIdField = new JTextField();
+        JTextField medicationField = new JTextField();
+        JTextField pharmacyField = new JTextField();
+        JTextField statusField = new JTextField();
+
+        panel.add(new JLabel("Patient ID (e.g. P001):"));
+        panel.add(patientIdField);
+
+        panel.add(new JLabel("Clinician ID (e.g. C008):"));
+        panel.add(clinicianIdField);
+
+        panel.add(new JLabel("Appointment ID (optional, e.g. AP001):"));
+        panel.add(appointmentIdField);
+
+        panel.add(new JLabel("Medication Name:"));
+        panel.add(medicationField);
+
+        panel.add(new JLabel("Pharmacy Name:"));
+        panel.add(pharmacyField);
+
+        panel.add(new JLabel("Status (Draft/Issued/Dispensed/Collected/Cancelled):"));
+        panel.add(statusField);
+
+        JButton saveButton = new JButton("Save");
+        JButton cancelButton = new JButton("Cancel");
+
+        saveButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String patientId = patientIdField.getText().trim();
+                String clinicianId = clinicianIdField.getText().trim();
+                String appointmentId = appointmentIdField.getText().trim();
+                String medication = medicationField.getText().trim();
+                String pharmacy = pharmacyField.getText().trim();
+                String status = statusField.getText().trim();
+
+                if (patientId.isEmpty() || clinicianId.isEmpty() || medication.isEmpty()
+                        || pharmacy.isEmpty() || status.isEmpty()) {
+                    showErrorMessage("Please complete all required fields");
+                    return;
+                }
+
+                if (createPrescriptionListener != null) {
+                    createPrescriptionListener.onCreatePrescription(
+                            patientId, clinicianId, appointmentId, medication, pharmacy, status
+                    );
+                }
+
+                dialog.dispose();
+            }
+        });
+
+        cancelButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose();
+            }
+        });
+
+        panel.add(saveButton);
+        panel.add(cancelButton);
+
+        dialog.add(panel);
+        dialog.setVisible(true);
+    }
+
+    private void showUpdatePrescriptionDialog() {
+        int selectedRow = (prescriptionsTable == null) ? -1 : prescriptionsTable.getSelectedRow();
+        if (selectedRow == -1) {
+            showErrorMessage("Please select a prescription to update");
+            return;
         }
 
-        mainTable.setModel(tableModel);
+        String prescriptionId = prescriptionsTable.getValueAt(selectedRow, 0).toString();
+        String currentStatus = prescriptionsTable.getValueAt(selectedRow, 12) == null
+                ? ""
+                : prescriptionsTable.getValueAt(selectedRow, 12).toString();
+
+        String input = JOptionPane.showInputDialog(
+                this,
+                "Enter new status for Prescription " + prescriptionId + ":",
+                currentStatus
+        );
+
+        if (input != null && !input.trim().isEmpty()) {
+            if (updatePrescriptionListener != null) {
+                updatePrescriptionListener.onUpdatePrescriptionStatus(prescriptionId, input.trim());
+            }
+        }
     }
 
-    public void showAppointments(List<Appointment> appointments) {
-        showAppointments(appointments, null);
+    private void showPrintPrescriptionDialog() {
+        int selectedRow = (prescriptionsTable == null) ? -1 : prescriptionsTable.getSelectedRow();
+        if (selectedRow == -1) {
+            showErrorMessage("Please select a prescription to print");
+            return;
+        }
+
+        String prescriptionId = prescriptionsTable.getValueAt(selectedRow, 0).toString();
+
+        if (printPrescriptionListener != null) {
+            printPrescriptionListener.onPrintPrescription(prescriptionId);
+        }
     }
 
-    public void showAppointments(List<Appointment> appointments, HmsModel model) {
-        String[] columns = {"Appointment ID", "Patient ID", "Clinician ID", "Facility ID", "Appointment Date",
-                "Time", "Duration", "Appointment Type", "Status", "Reason For Visit", "Notes", "Created Date",
-                "Last Modified"};
+    // ========== Appointments Panel ==========
+    private JPanel createAppointmentsPanel() {
+        JPanel panel = new JPanel(new BorderLayout(10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        DefaultTableModel tableModel = new DefaultTableModel(columns, 0);
+        JLabel titleLabel = new JLabel("Appointments");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        panel.add(titleLabel, BorderLayout.NORTH);
+
+        String[] columns = {
+                "Appointment ID", "Patient", "Clinician", "Facility", "Date",
+                "Time", "Duration", "Type", "Status", "Reason", "Notes",
+                "Created Date", "Last Modified"
+        };
+
+        appointmentsTableModel = new DefaultTableModel(columns, 0) {
+            public boolean isCellEditable(int row, int column) { return false; }
+        };
+
+        appointmentsTable = new JTable(appointmentsTableModel);
+        JScrollPane scrollPane = new JScrollPane(appointmentsTable);
+        panel.add(scrollPane, BorderLayout.CENTER);
+
+        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+
+        JButton refreshButton = new JButton("Refresh");
+        refreshButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (refreshAppointmentsListener != null) {
+                    refreshAppointmentsListener.run();
+                }
+            }
+        });
+
+        JButton createButton = new JButton("Create Appointment");
+        createButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                showCreateAppointmentDialog();
+            }
+        });
+
+        JButton updateButton = new JButton("Update Status");
+        updateButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                showUpdateAppointmentDialog();
+            }
+        });
+
+        JButton cancelButton = new JButton("Cancel Appointment");
+        cancelButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                showCancelAppointmentDialog();
+            }
+        });
+
+        // Role-based visibility (patient and admin can create/update/cancel)
+        if ("CONSULTANT".equals(currentRole)) {
+            createButton.setVisible(false);
+            updateButton.setVisible(false);
+            cancelButton.setVisible(false);
+        }
+
+        buttonsPanel.add(refreshButton);
+        buttonsPanel.add(createButton);
+        buttonsPanel.add(updateButton);
+        buttonsPanel.add(cancelButton);
+
+        panel.add(buttonsPanel, BorderLayout.SOUTH);
+
+        return panel;
+    }
+
+    public void refreshAppointmentsTable(ArrayList<Appointment> appointments, HmsModel model) {
+        if (appointmentsTableModel == null) return;
+
+        appointmentsTableModel.setRowCount(0);
 
         for (int i = 0; i < appointments.size(); i++) {
-            Appointment appointment = appointments.get(i);
+            Appointment a = appointments.get(i);
 
-            String patientLabel = (model == null) ? appointment.getPatientId() : model.formatPatientLabel(appointment.getPatientId());
-            String clinicianLabel = (model == null) ? appointment.getClinicianId() : model.formatClinicianLabel(appointment.getClinicianId());
-            String facilityLabel = (model == null) ? appointment.getFacilityId() : model.formatFacilityLabel(appointment.getFacilityId());
+            String patient = safeLabelPatient(model, a.getPatientId());
+            String clinician = safeLabelClinician(model, a.getClinicianId());
+            String facility = safeLabelFacility(model, a.getFacilityId());
 
-            tableModel.addRow(new Object[]{appointment.getAppointmentId(), patientLabel,
-                    clinicianLabel, facilityLabel, appointment.getAppointmentDate(),
-                    appointment.getAppointmentTime(), appointment.getDurationMinutes(), appointment.getAppointmentType(),
-                    appointment.getStatus(), appointment.getReasonForVisit(), appointment.getNotes(), appointment.getCreatedDate(),
-                    appointment.getLastModified()});
-        }
+            Object[] row = {
+                    a.getAppointmentId(),
+                    patient,
+                    clinician,
+                    facility,
+                    a.getAppointmentDate(),
+                    a.getAppointmentTime(),
+                    a.getDurationMinutes(),
+                    a.getAppointmentType(),
+                    a.getStatus(),
+                    a.getReasonForVisit(),
+                    a.getNotes(),
+                    a.getCreatedDate(),
+                    a.getLastModified()
+            };
 
-        mainTable.setModel(tableModel);
-    }
-
-
-    // advice messages to assist the user
-
-    public ReferralInput promptForReferral() {
-        String patientId = JOptionPane.showInputDialog(this, "Enter Patient ID (e.g. P001):");
-        if (patientId == null) return null;
-
-        String referringFacilityId = JOptionPane.showInputDialog(this, "Enter Referring Facility ID (e.g. F001):");
-        if (referringFacilityId == null) return null;
-
-        String referredToFacilityId = JOptionPane.showInputDialog(this, "Enter Referred To Facility ID (e.g. F002):");
-        if (referredToFacilityId == null) return null;
-
-        String referringClinicianId = JOptionPane.showInputDialog(this, "Enter Referring Clinician ID (e.g. C001):");
-        if (referringClinicianId == null) return null;
-
-        String referredToClinicianId = JOptionPane.showInputDialog(this, "Enter Referred To Clinician ID (e.g. C008):");
-        if (referredToClinicianId == null) return null;
-
-        String urgency = JOptionPane.showInputDialog(this, "Enter Urgency Level (Routine, Non-urgent, Urgent):");
-        if (urgency == null) return null;
-
-        String reason = JOptionPane.showInputDialog(this, "Enter Referral Reason:");
-        if (reason == null) return null;
-
-        String summary = JOptionPane.showInputDialog(this, "Enter Clinical Summary:");
-        if (summary == null) return null;
-
-        return new ReferralInput(patientId.trim(), referringFacilityId.trim(), referredToFacilityId.trim(),
-                referringClinicianId.trim(), referredToClinicianId.trim(), urgency.trim(), reason.trim(), summary.trim());
-    }
-
-    public PrescriptionInput promptForPrescription() {
-        String patientId = JOptionPane.showInputDialog(this, "Enter Patient ID (e.g. P001):");
-        if (patientId == null) return null;
-
-        String clinicianId = JOptionPane.showInputDialog(this, "Enter Clinician ID (e.g. C008):");
-        if (clinicianId == null) return null;
-
-        String appointmentId = JOptionPane.showInputDialog(this, "Enter Appointment ID (optional, e.g. AP001):");
-        if (appointmentId == null) appointmentId = "";
-
-        String medicationName = JOptionPane.showInputDialog(this, "Enter Medication Name:");
-        if (medicationName == null) return null;
-
-        String pharmacyName = JOptionPane.showInputDialog(this, "Enter Pharmacy Name:");
-        if (pharmacyName == null) return null;
-
-        String status = JOptionPane.showInputDialog(this, "Enter Status (Draft, Issued, Dispensed, Collected, Cancelled):");
-        if (status == null) return null;
-
-        return new PrescriptionInput(patientId.trim(), clinicianId.trim(), appointmentId.trim(),
-                medicationName.trim(), pharmacyName.trim(), status.trim());
-    }
-
-    public AppointmentInput promptForAppointment() {
-        String patientId = JOptionPane.showInputDialog(this, "Enter Patient ID (e.g. P001):");
-        if (patientId == null) return null;
-
-        String clinicianId = JOptionPane.showInputDialog(this, "Enter Clinician ID (optional, e.g. C001):");
-        if (clinicianId == null) clinicianId = "";
-
-        String date = JOptionPane.showInputDialog(this, "Enter Appointment Date (e.g. 2025-12-22):");
-        if (date == null) return null;
-
-        return new AppointmentInput(patientId.trim(), clinicianId.trim(), date.trim());
-    }
-
-    public static class ReferralInput {
-        public String patientId;
-        public String referringFacilityId;
-        public String referredToFacilityId;
-        public String referringClinicianId;
-        public String referredToClinicianId;
-        public String urgency;
-        public String reason;
-        public String summary;
-
-        public ReferralInput(String patientId,
-                             String referringFacilityId,
-                             String referredToFacilityId,
-                             String referringClinicianId,
-                             String referredToClinicianId,
-                             String urgency,
-                             String reason,
-                             String summary) {
-            this.patientId = patientId;
-            this.referringFacilityId = referringFacilityId;
-            this.referredToFacilityId = referredToFacilityId;
-            this.referringClinicianId = referringClinicianId;
-            this.referredToClinicianId = referredToClinicianId;
-            this.urgency = urgency;
-            this.reason = reason;
-            this.summary = summary;
+            appointmentsTableModel.addRow(row);
         }
     }
 
-    public static class PrescriptionInput {
-        public String patientId;
-        public String clinicianId;
-        public String appointmentId;
-        public String medicationName;
-        public String pharmacyName;
-        public String status;
+    private void showCreateAppointmentDialog() {
+        JDialog dialog = new JDialog(this, "Create Appointment", true);
+        dialog.setSize(450, 250);
+        dialog.setLocationRelativeTo(this);
 
-        public PrescriptionInput(String patientId,
-                                 String clinicianId,
-                                 String appointmentId,
-                                 String medicationName,
-                                 String pharmacyName,
-                                 String status) {
-            this.patientId = patientId;
-            this.clinicianId = clinicianId;
-            this.appointmentId = appointmentId;
-            this.medicationName = medicationName;
-            this.pharmacyName = pharmacyName;
-            this.status = status;
+        JPanel panel = new JPanel(new GridLayout(4, 2, 10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        JTextField patientIdField = new JTextField();
+        JTextField clinicianIdField = new JTextField();
+        JTextField dateField = new JTextField();
+
+        panel.add(new JLabel("Patient ID (e.g. P001):"));
+        panel.add(patientIdField);
+
+        panel.add(new JLabel("Clinician ID (optional, e.g. C001):"));
+        panel.add(clinicianIdField);
+
+        panel.add(new JLabel("Appointment Date (e.g. 2025-12-22):"));
+        panel.add(dateField);
+
+        JButton saveButton = new JButton("Save");
+        JButton cancelButton = new JButton("Cancel");
+
+        saveButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String patientId = patientIdField.getText().trim();
+                String clinicianId = clinicianIdField.getText().trim();
+                String date = dateField.getText().trim();
+
+                if (patientId.isEmpty() || date.isEmpty()) {
+                    showErrorMessage("Please enter Patient ID and Date");
+                    return;
+                }
+
+                if (createAppointmentListener != null) {
+                    createAppointmentListener.onCreateAppointment(patientId, clinicianId, date);
+                }
+
+                dialog.dispose();
+            }
+        });
+
+        cancelButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose();
+            }
+        });
+
+        panel.add(saveButton);
+        panel.add(cancelButton);
+
+        dialog.add(panel);
+        dialog.setVisible(true);
+    }
+
+    private void showUpdateAppointmentDialog() {
+        int selectedRow = (appointmentsTable == null) ? -1 : appointmentsTable.getSelectedRow();
+        if (selectedRow == -1) {
+            showErrorMessage("Please select an appointment to update");
+            return;
+        }
+
+        String appointmentId = appointmentsTable.getValueAt(selectedRow, 0).toString();
+        String currentStatus = appointmentsTable.getValueAt(selectedRow, 8) == null
+                ? ""
+                : appointmentsTable.getValueAt(selectedRow, 8).toString();
+
+        String input = JOptionPane.showInputDialog(
+                this,
+                "Enter new status for Appointment " + appointmentId + " (SCHEDULED, CANCELLED, COMPLETED):",
+                currentStatus
+        );
+
+        if (input != null && !input.trim().isEmpty()) {
+            if (updateAppointmentListener != null) {
+                updateAppointmentListener.onUpdateAppointmentStatus(appointmentId, input.trim());
+            }
         }
     }
 
-    public static class AppointmentInput {
-        public String patientId;
-        public String clinicianId;
-        public String date;
-
-        public AppointmentInput(String patientId, String clinicianId, String date) {
-            this.patientId = patientId;
-            this.clinicianId = clinicianId;
-            this.date = date;
+    private void showCancelAppointmentDialog() {
+        int selectedRow = (appointmentsTable == null) ? -1 : appointmentsTable.getSelectedRow();
+        if (selectedRow == -1) {
+            showErrorMessage("Please select an appointment to cancel");
+            return;
         }
+
+        String appointmentId = appointmentsTable.getValueAt(selectedRow, 0).toString();
+
+        int confirm = JOptionPane.showConfirmDialog(
+                this,
+                "Cancel Appointment " + appointmentId + "?",
+                "Confirm",
+                JOptionPane.YES_NO_OPTION
+        );
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            if (cancelAppointmentListener != null) {
+                cancelAppointmentListener.onCancelAppointment(appointmentId);
+            }
+        }
+    }
+
+    // ========== Helper methods ==========
+
+    private void showErrorMessage(String message) {
+        JOptionPane.showMessageDialog(this, message, "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    private String safeLabelPatient(HmsModel model, String patientId) {
+        if (model == null) return patientId;
+        try { return model.formatPatientLabel(patientId); }
+        catch (Exception e) { return patientId; }
+    }
+
+    private String safeLabelClinician(HmsModel model, String clinicianId) {
+        if (model == null) return clinicianId;
+        try { return model.formatClinicianLabel(clinicianId); }
+        catch (Exception e) { return clinicianId; }
+    }
+
+    private String safeLabelFacility(HmsModel model, String facilityId) {
+        if (model == null) return facilityId;
+        try { return model.formatFacilityLabel(facilityId); }
+        catch (Exception e) { return facilityId; }
+    }
+
+    // ========== Listener setters ==========
+
+    public void setRefreshPatientsListener(Runnable l) { this.refreshPatientsListener = l; }
+    public void setRefreshReferralsListener(Runnable l) { this.refreshReferralsListener = l; }
+    public void setRefreshPrescriptionsListener(Runnable l) { this.refreshPrescriptionsListener = l; }
+    public void setRefreshAppointmentsListener(Runnable l) { this.refreshAppointmentsListener = l; }
+
+    public void setCreateReferralListener(CreateReferralListener l) { this.createReferralListener = l; }
+    public void setCreatePrescriptionListener(CreatePrescriptionListener l) { this.createPrescriptionListener = l; }
+    public void setCreateAppointmentListener(CreateAppointmentListener l) { this.createAppointmentListener = l; }
+
+    public void setUpdateReferralListener(UpdateReferralListener l) { this.updateReferralListener = l; }
+    public void setUpdatePrescriptionListener(UpdatePrescriptionListener l) { this.updatePrescriptionListener = l; }
+    public void setUpdateAppointmentListener(UpdateAppointmentListener l) { this.updateAppointmentListener = l; }
+
+    public void setCancelAppointmentListener(CancelAppointmentListener l) { this.cancelAppointmentListener = l; }
+
+    public void setPrintReferralListener(PrintReferralListener l) { this.printReferralListener = l; }
+    public void setPrintPrescriptionListener(PrintPrescriptionListener l) { this.printPrescriptionListener = l; }
+
+    public void setOnCloseListener(Runnable l) { this.onCloseListener = l; }
+
+    // =====================================================================================
+    // Listener interfaces (Bookshop-style, defined in view file like the example project style)
+    // =====================================================================================
+
+    public interface CreateReferralListener {
+        void onCreateReferral(String patientId,
+                              String referringFacilityId,
+                              String referredToFacilityId,
+                              String referringClinicianId,
+                              String referredToClinicianId,
+                              String urgency,
+                              String reason,
+                              String summary);
+    }
+
+    public interface UpdateReferralListener {
+        void onUpdateReferralStatus(String referralId, String newStatus);
+    }
+
+    public interface PrintReferralListener {
+        void onPrintReferral(String referralId);
+    }
+
+    public interface CreatePrescriptionListener {
+        void onCreatePrescription(String patientId,
+                                  String clinicianId,
+                                  String appointmentId,
+                                  String medicationName,
+                                  String pharmacyName,
+                                  String status);
+    }
+
+    public interface UpdatePrescriptionListener {
+        void onUpdatePrescriptionStatus(String prescriptionId, String newStatus);
+    }
+
+    public interface PrintPrescriptionListener {
+        void onPrintPrescription(String prescriptionId);
+    }
+
+    public interface CreateAppointmentListener {
+        void onCreateAppointment(String patientId, String clinicianId, String date);
+    }
+
+    public interface UpdateAppointmentListener {
+        void onUpdateAppointmentStatus(String appointmentId, String newStatus);
+    }
+
+    public interface CancelAppointmentListener {
+        void onCancelAppointment(String appointmentId);
     }
 }

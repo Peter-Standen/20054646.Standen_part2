@@ -28,12 +28,12 @@ public class ReferralManager {
         pending.add(r);
     }
 
-    // I have aligned this with the getAllOrders() method from the bookshop
+    // to ensure consistency, I have aligned this with the getAllOrders() method from the bookshop
     public ArrayList<Referral> getAllReferrals() {
         return referrals;
     }
 
-    // I have aligned this with the completeOrder(orderId) method from the bookshop
+    // to ensure consistency, I have aligned this with the completeOrder(orderId) method from the bookshop
     public void completeReferral(String referralId) {
         if (referralId == null) return;
 
@@ -46,7 +46,7 @@ public class ReferralManager {
         }
 
         if (found != null) {
-            pending.remove(found); // simplest possible “complete”
+            pending.remove(found);
         }
     }
 }

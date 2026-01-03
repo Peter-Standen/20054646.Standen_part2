@@ -41,4 +41,16 @@ public class CSVHandler {
             e.printStackTrace();
         }
     }
+
+    public static void createFileIfNotExists(String filename) {
+        try {
+            File file = new File(filename);
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+        } catch (IOException e) {
+            System.err.println("Error creating file: " + filename);
+            e.printStackTrace();
+        }
+    }
 }
