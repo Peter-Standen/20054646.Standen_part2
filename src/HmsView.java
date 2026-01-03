@@ -60,6 +60,13 @@ public class HmsView extends JFrame {
     // Close listener
     private Runnable onCloseListener;
 
+    // Role selection components // additional user selection code:
+    private JPanel rolePanel; // additional user selection code:
+    private JLabel roleLabel; // additional user selection code:
+    private JButton adminRoleButton; // additional user selection code:
+    private JButton consultantRoleButton; // additional user selection code:
+    private JButton patientRoleButton; // additional user selection code:
+
     public HmsView() {
         setTitle("Healthcare Management System - MVC Architecture");
         setSize(1600, 600);
@@ -78,13 +85,48 @@ public class HmsView extends JFrame {
     private void initComponents() {
         tabbedPane = new JTabbedPane();
 
+        // Build role selection bar (no login, just view switching) // additional user selection code:
+        rolePanel = new JPanel(new FlowLayout(FlowLayout.LEFT)); // additional user selection code:
+        roleLabel = new JLabel("Current role: (none)"); // additional user selection code:
+        roleLabel.setFont(new Font("Arial", Font.BOLD, 12)); // additional user selection code:
+        adminRoleButton = new JButton("Admin"); // additional user selection code:
+        consultantRoleButton = new JButton("Consultant"); // additional user selection code:
+        patientRoleButton = new JButton("Patient"); // additional user selection code:
+
+        adminRoleButton.addActionListener(new ActionListener() { // additional user selection code:
+            public void actionPerformed(ActionEvent e) { // additional user selection code:
+                applyRole("ADMIN"); // additional user selection code:
+                roleLabel.setText("Current role: ADMIN"); // additional user selection code:
+            } // additional user selection code:
+        }); // additional user selection code:
+
+        consultantRoleButton.addActionListener(new ActionListener() { // additional user selection code:
+            public void actionPerformed(ActionEvent e) { // additional user selection code:
+                applyRole("CONSULTANT"); // additional user selection code:
+                roleLabel.setText("Current role: CONSULTANT"); // additional user selection code:
+            } // additional user selection code:
+        }); // additional user selection code:
+
+        patientRoleButton.addActionListener(new ActionListener() { // additional user selection code:
+            public void actionPerformed(ActionEvent e) { // additional user selection code:
+                applyRole("PATIENT"); // additional user selection code:
+                roleLabel.setText("Current role: PATIENT"); // additional user selection code:
+            } // additional user selection code:
+        }); // additional user selection code:
+
+        rolePanel.add(roleLabel); // additional user selection code:
+        rolePanel.add(adminRoleButton); // additional user selection code:
+        rolePanel.add(consultantRoleButton); // additional user selection code:
+        rolePanel.add(patientRoleButton); // additional user selection code:
+        add(rolePanel, BorderLayout.NORTH); // additional user selection code:
+
         // Default: show everything until a role is applied
         tabbedPane.addTab("Patients", createPatientsPanel());
         tabbedPane.addTab("Referrals", createReferralsPanel());
         tabbedPane.addTab("Prescriptions", createPrescriptionsPanel());
         tabbedPane.addTab("Appointments", createAppointmentsPanel());
 
-        add(tabbedPane);
+        add(tabbedPane, BorderLayout.CENTER); // additional user selection code:
 
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
