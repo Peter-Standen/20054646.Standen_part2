@@ -40,12 +40,12 @@ public class HmsView extends JFrame {
     private Runnable refreshPrescriptionsListener;
     private Runnable refreshAppointmentsListener;
 
-    // Create listeners (Bookshop style: view collects input and passes it)
+    // Create listeners
     private CreateReferralListener createReferralListener;
     private CreatePrescriptionListener createPrescriptionListener;
     private CreateAppointmentListener createAppointmentListener;
 
-    // Update/edit listeners (Bookshop style: view prompts and passes result)
+    // Update/edit listeners
     private UpdateReferralListener updateReferralListener;
     private UpdatePrescriptionListener updatePrescriptionListener;
     private UpdateAppointmentListener updateAppointmentListener;
@@ -78,8 +78,6 @@ public class HmsView extends JFrame {
 
     public void setController(HmsController controller) {
         this.controller = controller;
-        // I needed to make a sligh adaption here, while the bookshopView loads Books/Authors on setController,
-        // HMS does not auto-load, allowing for user selection.
     }
 
     private void initComponents() {
@@ -953,7 +951,7 @@ public class HmsView extends JFrame {
     public void setOnCloseListener(Runnable listener) { this.onCloseListener = listener; }
 
     // =====================================================================================
-    // Listener interfaces (Bookshop-style, defined in view file like the example project style)
+    // Listener interfaces
     // =====================================================================================
 
     public interface CreateReferralListener {

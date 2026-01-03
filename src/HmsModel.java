@@ -7,7 +7,6 @@ import java.text.SimpleDateFormat;
  * Main Model class for the Healthcare Management System
  */
 public class HmsModel {
-
     private HashMap<String, Patient> patients;
     private HashMap<String, Clinician> clinicians;
     private HashMap<String, Facility> facilities;
@@ -25,11 +24,10 @@ public class HmsModel {
     private static final String PRESCRIPTIONS_FILE = "prescriptions.csv";
     private static final String REFERRALS_FILE = "referrals.csv";
 
-    // Print simulation files (txt)
+    // Print simulation files
     private static final String REFERRAL_EMAIL_FILE = "referral_emails.txt";
     private static final String REFERRAL_PRINT_FILE = "referral_prints.txt";
     private static final String PRESCRIPTION_PRINT_FILE = "prescription_prints.txt";
-
     private static final SimpleDateFormat PRINT_DF = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
     private int nextReferralNumber = 1;
@@ -143,7 +141,8 @@ public class HmsModel {
 
     private void savePatients() {
         ArrayList<String> lines = new ArrayList<String>();
-        lines.add("patient_id,first_name,last_name,date_of_birth,nhs_number,gender,phone_number,email,address,postcode,emergency_contact_name,emergency_contact_phone,registration_date,gp_surgery_id");
+        lines.add("patient_id,first_name,last_name,date_of_birth,nhs_number,gender,phone_number,email,address," +
+                "postcode,emergency_contact_name,emergency_contact_phone,registration_date,gp_surgery_id");
 
         ArrayList<Patient> list = new ArrayList<Patient>(patients.values());
         for (int i = 0; i < list.size(); i++) {
@@ -166,7 +165,8 @@ public class HmsModel {
 
     private void saveClinicians() {
         ArrayList<String> lines = new ArrayList<String>();
-        lines.add("clinician_id,first_name,last_name,title,speciality,gmc_number,phone_number,email,workplace_id,workplace_type,employment_status,start_date");
+        lines.add("clinician_id,first_name,last_name,title,speciality,gmc_number,phone_number,email,workplace_id," +
+                "workplace_type,employment_status,start_date");
 
         ArrayList<Clinician> list = new ArrayList<Clinician>(clinicians.values());
         for (int i = 0; i < list.size(); i++) {
@@ -189,7 +189,8 @@ public class HmsModel {
 
     private void saveFacilities() {
         ArrayList<String> lines = new ArrayList<String>();
-        lines.add("facility_id,facility_name,facility_type,address,postcode,phone_number,email,opening_hours,manager_name,capacity,specialities_offered");
+        lines.add("facility_id,facility_name,facility_type,address,postcode,phone_number,email,opening_hours," +
+                "manager_name,capacity,specialities_offered");
 
         ArrayList<Facility> list = new ArrayList<Facility>(facilities.values());
         for (int i = 0; i < list.size(); i++) {
@@ -212,7 +213,8 @@ public class HmsModel {
 
     private void saveAppointments() {
         ArrayList<String> lines = new ArrayList<String>();
-        lines.add("appointment_id,patient_id,clinician_id,facility_id,appointment_date,appointment_time,duration_minutes,appointment_type,status,reason_for_visit,notes,created_date,last_modified");
+        lines.add("appointment_id,patient_id,clinician_id,facility_id,appointment_date,appointment_time," +
+                "duration_minutes,appointment_type,status,reason_for_visit,notes,created_date,last_modified");
 
         ArrayList<Appointment> list = new ArrayList<Appointment>(appointments.values());
         for (int i = 0; i < list.size(); i++) {
@@ -264,7 +266,8 @@ public class HmsModel {
 
     private void savePrescriptions() {
         ArrayList<String> lines = new ArrayList<String>();
-        lines.add("prescription_id,patient_id,clinician_id,appointment_id,prescription_date,medication_name,dosage,frequency,duration_days,quantity,instructions,pharmacy_name,status,issue_date,collection_date");
+        lines.add("prescription_id,patient_id,clinician_id,appointment_id,prescription_date,medication_name," +
+                "dosage,frequency,duration_days,quantity,instructions,pharmacy_name,status,issue_date,collection_date");
 
         ArrayList<Prescription> list = new ArrayList<Prescription>(prescriptions.values());
         for (int i = 0; i < list.size(); i++) {
@@ -330,131 +333,66 @@ public class HmsModel {
 
     public String formatPatientLabel(String patientId) {
         if (patientId == null) return "";
-        Patient p = patients.get(patientId.trim());
-        if (p == null) return patientId;
-        return p.getPatientId() + " - " + p.getFirstName() + " " + p.getLastName();
+        Patient patient = patients.get(patientId.trim());
+        if (patient == null) return patientId;
+        return patient.getPatientId() + " - " + patient.getFirstName() + " " + patient.getLastName();
     }
 
     public String formatClinicianLabel(String clinicianId) {
         if (clinicianId == null) return "";
-        Clinician c = clinicians.get(clinicianId.trim());
-        if (c == null) return clinicianId;
+        Clinician clinician = clinicians.get(clinicianId.trim());
+        if (clinician == null) return clinicianId;
 
         String title = "";
         try {
-            Object t = c.getTitle();
-            if (t != null) title = t.toString() + " ";
+            Object ttitle = clinician.getTitle();
+            if (ttitle != null) title = ttitle.toString() + " ";
         } catch (Exception e) {
             // ignore
         }
 
-        return c.getClinicianId() + " - " + title + c.getFirstName() + " " + c.getLastName();
+        return clinician.getClinicianId() + " - " + title + clinician.getFirstName() + " " + clinician.getLastName();
     }
 
     public String formatFacilityLabel(String facilityId) {
         if (facilityId == null) return "";
-        Facility f = facilities.get(facilityId.trim());
-        if (f == null) return facilityId;
-        return f.getFacilityId() + " - " + f.getFacilityName();
+        Facility facility = facilities.get(facilityId.trim());
+        if (facility == null) return facilityId;
+        return facility.getFacilityId() + " - " + facility.getFacilityName();
     }
 
-    // ========== Create Basic Objects (Bookshop-style) ==========
+    // ========== Create Basic Objects ==========
 
-    public Prescription createBasicPrescription(String prescriptionId,
-                                                String patientId,
-                                                String clinicianId,
-                                                String appointmentId,
-                                                String medicationName,
-                                                String pharmacyName,
+    public Prescription createBasicPrescription(String prescriptionId, String patientId, String clinicianId,
+                                                String appointmentId, String medicationName, String pharmacyName,
                                                 String status) {
 
         String csv =
-                safe(prescriptionId) + "," +
-                        safe(patientId) + "," +
-                        safe(clinicianId) + "," +
-                        safe(appointmentId) + "," +
-                        "," +
-                        safe(medicationName) + "," +
-                        "," +
-                        "," +
-                        "," +
-                        "," +
-                        "," +
-                        safe(pharmacyName) + "," +
-                        safe(status) + "," +
-                        "," +
-                        "";
-
+                safe(prescriptionId) + "," + safe(patientId) + "," + safe(clinicianId) + "," + safe(appointmentId)
+                        + "," + "," + safe(medicationName) + "," + "," + "," + "," + "," + "," + safe(pharmacyName)
+                        + "," + safe(status) + "," + "," + "";
         return Prescription.fromCSV(csv);
     }
 
-    public Appointment createBasicAppointment(String appointmentId,
-                                              String patientId,
-                                              String clinicianId,
+    public Appointment createBasicAppointment(String appointmentId, String patientId, String clinicianId,
                                               String date) {
 
         String csv =
-                safe(appointmentId) + "," +
-                        safe(patientId) + "," +
-                        safe(clinicianId) + "," +
-                        "," +
-                        safe(date) + "," +
-                        "," +
-                        "," +
-                        "," +
-                        "SCHEDULED," +
-                        "," +
-                        "," +
-                        "," +
-                        "";
-
+                safe(appointmentId) + "," + safe(patientId) + "," + safe(clinicianId) + "," + "," + safe(date) + "," +
+                        "," + "," + "," + "SCHEDULED," + "," + "," + "," + "";
         return Appointment.fromCSV(csv);
     }
 
-    public Referral createBasicReferral(String referralId,
-                                        String patientId,
-                                        String referringClinicianId,
-                                        String referredToClinicianId,
-                                        String referringFacilityId,
-                                        String referredToFacilityId,
-                                        String urgency,
-                                        String reason,
-                                        String summary) {
+    public Referral createBasicReferral(String referralId, String patientId, String referringClinicianId,
+                                        String referredToClinicianId, String referringFacilityId,
+                                        String referredToFacilityId, String urgency, String reason, String summary) {
 
         String csv =
-                safe(referralId) + "," +
-                        safe(patientId) + "," +
-                        safe(referringClinicianId) + "," +
-                        safe(referredToClinicianId) + "," +
-                        safe(referringFacilityId) + "," +
-                        safe(referredToFacilityId) + "," +
-                        "," +
-                        safe(urgency) + "," +
-                        safe(reason) + "," +
-                        safe(summary) + "," +
-                        "," +
-                        "NEW," +
-                        "," +
-                        "," +
-                        "," +
-                        "," +
-                        "";
-
+                safe(referralId) + "," + safe(patientId) + "," + safe(referringClinicianId) + "," +
+                        safe(referredToClinicianId) + "," + safe(referringFacilityId) + "," +
+                        safe(referredToFacilityId) + "," + "," + safe(urgency) + "," + safe(reason) + "," +
+                        safe(summary) + "," + "," + "NEW," + "," + "," + "," + "," + "";
         return Referral.fromCSV(csv);
-    }
-
-    // Keep your current enum approach exactly as you have it
-    public PrescriptionStatus parsePrescriptionStatus(String input) {
-        if (input == null) return null;
-        String s = input.trim();
-        if (s.isEmpty()) return null;
-
-        try {
-            String normalised = s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase();
-            return PrescriptionStatus.valueOf(normalised);
-        } catch (Exception e) {
-            return null;
-        }
     }
 
     // ========== Printing (Simulation) ==========

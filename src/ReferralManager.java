@@ -3,7 +3,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 /**
- * Singleton class to manage referrals (similar to OrderManager in the Bookshop example)
+ * Singleton class to manage referrals
  */
 public class ReferralManager {
 
