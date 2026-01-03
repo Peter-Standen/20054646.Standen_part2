@@ -890,25 +890,25 @@ public class HmsView extends JFrame {
 
     // ========== Listener setters ==========
 
-    public void setRefreshPatientsListener(Runnable l) { this.refreshPatientsListener = l; }
-    public void setRefreshReferralsListener(Runnable l) { this.refreshReferralsListener = l; }
-    public void setRefreshPrescriptionsListener(Runnable l) { this.refreshPrescriptionsListener = l; }
-    public void setRefreshAppointmentsListener(Runnable l) { this.refreshAppointmentsListener = l; }
+    public void setRefreshPatientsListener(Runnable listener) { this.refreshPatientsListener = listener; }
+    public void setRefreshReferralsListener(Runnable listener) { this.refreshReferralsListener = listener; }
+    public void setRefreshPrescriptionsListener(Runnable listener) { this.refreshPrescriptionsListener = listener; }
+    public void setRefreshAppointmentsListener(Runnable listener) { this.refreshAppointmentsListener = listener; }
 
-    public void setCreateReferralListener(CreateReferralListener l) { this.createReferralListener = l; }
-    public void setCreatePrescriptionListener(CreatePrescriptionListener l) { this.createPrescriptionListener = l; }
-    public void setCreateAppointmentListener(CreateAppointmentListener l) { this.createAppointmentListener = l; }
+    public void setCreateReferralListener(CreateReferralListener listener) { this.createReferralListener = listener; }
+    public void setCreatePrescriptionListener(CreatePrescriptionListener listener) { this.createPrescriptionListener = listener; }
+    public void setCreateAppointmentListener(CreateAppointmentListener listener) { this.createAppointmentListener = listener; }
 
-    public void setUpdateReferralListener(UpdateReferralListener l) { this.updateReferralListener = l; }
-    public void setUpdatePrescriptionListener(UpdatePrescriptionListener l) { this.updatePrescriptionListener = l; }
-    public void setUpdateAppointmentListener(UpdateAppointmentListener l) { this.updateAppointmentListener = l; }
+    public void setUpdateReferralListener(UpdateReferralListener listener) { this.updateReferralListener = listener; }
+    public void setUpdatePrescriptionListener(UpdatePrescriptionListener listener) { this.updatePrescriptionListener = listener; }
+    public void setUpdateAppointmentListener(UpdateAppointmentListener listener) { this.updateAppointmentListener = listener; }
 
-    public void setCancelAppointmentListener(CancelAppointmentListener l) { this.cancelAppointmentListener = l; }
+    public void setCancelAppointmentListener(CancelAppointmentListener listener) { this.cancelAppointmentListener = listener; }
 
-    public void setPrintReferralListener(PrintReferralListener l) { this.printReferralListener = l; }
-    public void setPrintPrescriptionListener(PrintPrescriptionListener l) { this.printPrescriptionListener = l; }
+    public void setPrintReferralListener(PrintReferralListener listener) { this.printReferralListener = listener; }
+    public void setPrintPrescriptionListener(PrintPrescriptionListener listener) { this.printPrescriptionListener = listener; }
 
-    public void setOnCloseListener(Runnable l) { this.onCloseListener = l; }
+    public void setOnCloseListener(Runnable listener) { this.onCloseListener = listener; }
 
     // =====================================================================================
     // Listener interfaces (Bookshop-style, defined in view file like the example project style)

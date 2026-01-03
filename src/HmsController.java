@@ -1,4 +1,5 @@
 import javax.swing.JOptionPane;
+import java.util.Date;
 
 /**
  * Main Controller class that coordinates between Model and View
@@ -12,24 +13,19 @@ public class HmsController {
         this.model = model;
         this.view = view;
 
-        // Bookshop-style: initialize the UI first, then wire listeners
         initializeView();
         setupEventListeners();
     }
 
-    // Bookshop-style initialization method
     private void initializeView() {
-        // Refresh everything once at startup (safe and simple)
         handleRefreshPatients();
         handleRefreshReferrals();
         handleRefreshPrescriptions();
         handleRefreshAppointments();
     }
 
-    // Bookshop-style listener wiring method
     private void setupEventListeners() {
 
-        // Refresh buttons (matches Bookshop "refresh table" pattern)
         view.setRefreshPatientsListener(new Runnable() {
             public void run() { handleRefreshPatients(); }
         });
@@ -46,7 +42,6 @@ public class HmsController {
             public void run() { handleRefreshAppointments(); }
         });
 
-        // Referral actions
         view.setCreateReferralListener(new HmsView.CreateReferralListener() {
             public void onCreateReferral(String patientId,
                                          String referringFacilityId,
@@ -73,7 +68,6 @@ public class HmsController {
             }
         });
 
-        // Prescription actions
         view.setCreatePrescriptionListener(new HmsView.CreatePrescriptionListener() {
             public void onCreatePrescription(String patientId,
                                              String clinicianId,
@@ -97,7 +91,6 @@ public class HmsController {
             }
         });
 
-        // Appointment actions
         view.setCreateAppointmentListener(new HmsView.CreateAppointmentListener() {
             public void onCreateAppointment(String patientId, String clinicianId, String date) {
                 handleCreateAppointment(patientId, clinicianId, date);
@@ -116,7 +109,6 @@ public class HmsController {
             }
         });
 
-        // Close (Bookshop-style)
         view.setOnCloseListener(new Runnable() {
             public void run() {
                 model.saveAllData();
@@ -124,9 +116,7 @@ public class HmsController {
         });
     }
 
-    // =========================
-    // Refresh handlers
-    // =========================
+    // ========== Refresh Handlers ==========
 
     private void handleRefreshPatients() {
         view.refreshPatientsTable(model.getAllPatients(), model);
@@ -144,9 +134,7 @@ public class HmsController {
         view.refreshAppointmentsTable(model.getAllAppointments(), model);
     }
 
-    // =========================
-    // Referral handlers
-    // =========================
+    // ========== Referral Handlers ==========
 
     private void handleCreateReferral(String patientId,
                                       String referringFacilityId,
@@ -183,10 +171,10 @@ public class HmsController {
         try {
             referral.setStatus(newStatus);
         } catch (Exception e) {
-            // keep it robust if status is an enum in your model
+            // keep robust if status is enum in your Referral class
         }
 
-        referral.setLastUpdated(new java.util.Date());
+        referral.setLastUpdated(new Date());
         model.updateReferral(referral);
         handleRefreshReferrals();
     }
@@ -202,9 +190,7 @@ public class HmsController {
         JOptionPane.showMessageDialog(view, "Referral printed to file.");
     }
 
-    // =========================
-    // Prescription handlers
-    // =========================
+    // ========== Prescription Handlers ==========
 
     private void handleCreatePrescription(String patientId,
                                           String clinicianId,
@@ -258,9 +244,7 @@ public class HmsController {
         JOptionPane.showMessageDialog(view, "Prescription printed to file.");
     }
 
-    // =========================
-    // Appointment handlers
-    // =========================
+    // ========== Appointment Handlers ==========
 
     private void handleCreateAppointment(String patientId, String clinicianId, String date) {
         String appointmentId = model.generateAppointmentId();
@@ -282,14 +266,13 @@ public class HmsController {
             return;
         }
 
-        // keep it robust if your Appointment uses enum or string
         try {
             appointment.setStatus(newStatus);
         } catch (Exception e) {
             // ignore
         }
 
-        appointment.setLastModified(new java.util.Date());
+        appointment.setLastModified(new Date());
         model.updateAppointment(appointment);
         handleRefreshAppointments();
     }
