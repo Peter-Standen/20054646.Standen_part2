@@ -245,7 +245,6 @@ public class HmsModel {
         try {
             appointment.setStatus("CANCELLED");
         } catch (Exception e) {
-            // keep robust if status is enum in your Appointment class
         }
 
         appointment.setLastModified(new Date());
@@ -329,7 +328,7 @@ public class HmsModel {
         saveReferrals();
     }
 
-    // ========== Friendly Labels (Used by View) ==========
+    // ========== User Friendly Labels ==========
 
     public String formatPatientLabel(String patientId) {
         if (patientId == null) return "";
@@ -348,7 +347,6 @@ public class HmsModel {
             Object ttitle = clinician.getTitle();
             if (ttitle != null) title = ttitle.toString() + " ";
         } catch (Exception e) {
-            // ignore
         }
 
         return clinician.getClinicianId() + " - " + title + clinician.getFirstName() + " " + clinician.getLastName();
@@ -361,7 +359,7 @@ public class HmsModel {
         return facility.getFacilityId() + " - " + facility.getFacilityName();
     }
 
-    // ========== Create Basic Objects ==========
+    // ========== Create Basic Files ==========
 
     public Prescription createBasicPrescription(String prescriptionId, String patientId, String clinicianId,
                                                 String appointmentId, String medicationName, String pharmacyName,

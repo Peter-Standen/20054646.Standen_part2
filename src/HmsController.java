@@ -12,24 +12,23 @@ public class HmsController {
         this.model = model;
         this.view = view;
 
-        // initialize the UI first, then wire listeners
+        // this initialises the UI first, then wires the listeners
         initializeView();
         setupEventListeners();
     }
 
-    // initialization method
+    // this initialises the method
     private void initializeView() {
-        // Refresh everything once at startup (safe and simple)
         handleRefreshPatients();
         handleRefreshReferrals();
         handleRefreshPrescriptions();
         handleRefreshAppointments();
     }
 
-    // listener wiring method
+    // and the listener wiring method
     private void setupEventListeners() {
 
-        // Refresh buttons
+        // refresh buttons
         view.setRefreshPatientsListener(new Runnable() {
             public void run() { handleRefreshPatients(); }
         });
@@ -46,7 +45,7 @@ public class HmsController {
             public void run() { handleRefreshAppointments(); }
         });
 
-        // Referral actions
+        // referral actions
         view.setCreateReferralListener(new HmsView.CreateReferralListener() {
             public void onCreateReferral(String patientId,
                                          String referringFacilityId,
@@ -73,7 +72,7 @@ public class HmsController {
             }
         });
 
-        // Prescription actions
+        // prescription actions
         view.setCreatePrescriptionListener(new HmsView.CreatePrescriptionListener() {
             public void onCreatePrescription(String patientId,
                                              String clinicianId,
@@ -97,7 +96,7 @@ public class HmsController {
             }
         });
 
-        // Appointment actions
+        // appointment actions
         view.setCreateAppointmentListener(new HmsView.CreateAppointmentListener() {
             public void onCreateAppointment(String patientId, String clinicianId, String date) {
                 handleCreateAppointment(patientId, clinicianId, date);
@@ -116,7 +115,7 @@ public class HmsController {
             }
         });
 
-        // Close
+        // close listener
         view.setOnCloseListener(new Runnable() {
             public void run() {
                 model.saveAllData();
@@ -183,7 +182,7 @@ public class HmsController {
         try {
             referral.setStatus(newStatus);
         } catch (Exception e) {
-            // keep it robust if status is an enum in your model
+
         }
 
         referral.setLastUpdated(new java.util.Date());
@@ -272,11 +271,9 @@ public class HmsController {
             return;
         }
 
-        // keep it robust if your Appointment uses enum or string
         try {
             appointment.setStatus(newStatus);
         } catch (Exception e) {
-            // ignore
         }
 
         appointment.setLastModified(new java.util.Date());
