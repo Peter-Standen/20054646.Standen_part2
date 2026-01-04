@@ -33,7 +33,6 @@ public class HmsView extends JFrame {
     private String currentRole = "";
 
     // Listener References
-
     // Refresh/load listeners
     private Runnable refreshPatientsListener;
     private Runnable refreshReferralsListener;
@@ -69,7 +68,7 @@ public class HmsView extends JFrame {
 
     public HmsView() {
         setTitle("Healthcare Management System - MVC Architecture");
-        setSize(1600, 600);
+        setSize(1900, 1000);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -350,20 +349,24 @@ public class HmsView extends JFrame {
 
     private void showCreateReferralDialog() {
         JDialog dialog = new JDialog(this, "Create Referral", true);
-        dialog.setSize(500, 350);
-        dialog.setLocationRelativeTo(this);
+        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
-        JPanel panel = new JPanel(new GridLayout(9, 2, 10, 10));
-        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        JTextField patientIdField = new JTextField();
-        JTextField fromFacilityField = new JTextField();
-        JTextField toFacilityField = new JTextField();
-        JTextField fromClinicianField = new JTextField();
-        JTextField toClinicianField = new JTextField();
-        JTextField urgencyField = new JTextField();
-        JTextField reasonField = new JTextField();
-        JTextField summaryField = new JTextField();
+        JPanel panel = new JPanel(new GridLayout(11, 2, 10, 10));
+
+        JTextField patientIdField = new JTextField(20);
+        JTextField fromFacilityField = new JTextField(20);
+        JTextField toFacilityField = new JTextField(20);
+        JTextField fromClinicianField = new JTextField(20);
+        JTextField toClinicianField = new JTextField(20);
+        JTextField urgencyField = new JTextField(20);
+        JTextField reasonField = new JTextField(20);
+        JTextField summaryField = new JTextField(20);
+        JTextField investigationsField = new JTextField();
+        JTextField notesField = new JTextField();
+        JTextField appointmentIdField = new JTextField();
 
         panel.add(new JLabel("Patient ID (e.g. P001):"));
         panel.add(patientIdField);
@@ -389,8 +392,23 @@ public class HmsView extends JFrame {
         panel.add(new JLabel("Clinical Summary:"));
         panel.add(summaryField);
 
+        panel.add(new JLabel("Requested Investigations:"));
+        panel.add(investigationsField);
+
+        panel.add(new JLabel("Appointment ID (optional):"));
+        panel.add(appointmentIdField);
+
+        panel.add(new JLabel("Notes:"));
+        panel.add(notesField);
+
+        mainPanel.add(panel, BorderLayout.CENTER);
+
+        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton saveButton = new JButton("Save");
         JButton cancelButton = new JButton("Cancel");
+        buttonsPanel.add(saveButton);
+        buttonsPanel.add(cancelButton);
+        mainPanel.add(buttonsPanel, BorderLayout.SOUTH);
 
         saveButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -402,8 +420,11 @@ public class HmsView extends JFrame {
                 String urgency = urgencyField.getText().trim();
                 String reason = reasonField.getText().trim();
                 String summary = summaryField.getText().trim();
+                String investigations = investigationsField.getText().trim();
+                String appointmentId = appointmentIdField.getText().trim();
+                String notes = notesField.getText().trim();
 
-                // I created just a single listener to create a warning to complete all fields.
+
                 if (patientId.isEmpty() || fromFacility.isEmpty() || toFacility.isEmpty()
                         || fromClinician.isEmpty() || toClinician.isEmpty()
                         || urgency.isEmpty() || reason.isEmpty() || summary.isEmpty()) {
@@ -413,10 +434,8 @@ public class HmsView extends JFrame {
 
                 if (createReferralListener != null) {
                     createReferralListener.onCreateReferral(
-                            patientId, fromFacility, toFacility,
-                            fromClinician, toClinician,
-                            urgency, reason, summary
-                    );
+                            patientId, fromFacility, toFacility, fromClinician, toClinician, urgency,
+                            reason, summary, investigations, appointmentId, notes );
                 }
 
                 dialog.dispose();
@@ -429,12 +448,12 @@ public class HmsView extends JFrame {
             }
         });
 
-        panel.add(saveButton);
-        panel.add(cancelButton);
-
-        dialog.add(panel);
+        dialog.setContentPane(mainPanel);
+        dialog.pack();
+        dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
     }
+
 
     private void showUpdateReferralDialog() {
         int selectedRow = (referralsTable == null) ? -1 : referralsTable.getSelectedRow();
@@ -585,18 +604,27 @@ public class HmsView extends JFrame {
 
     private void showCreatePrescriptionDialog() {
         JDialog dialog = new JDialog(this, "Create Prescription", true);
-        dialog.setSize(500, 300);
-        dialog.setLocationRelativeTo(this);
+        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
-        JPanel panel = new JPanel(new GridLayout(7, 2, 10, 10));
-        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        JTextField patientIdField = new JTextField();
-        JTextField clinicianIdField = new JTextField();
-        JTextField appointmentIdField = new JTextField();
-        JTextField medicationField = new JTextField();
-        JTextField pharmacyField = new JTextField();
-        JTextField statusField = new JTextField();
+        JPanel panel = new JPanel(new GridLayout(11, 2, 10, 10));
+
+        JTextField patientIdField = new JTextField(20);
+        JTextField clinicianIdField = new JTextField(20);
+        JTextField appointmentIdField = new JTextField(20);
+        JTextField medicationField = new JTextField(20);
+        JTextField dosageField = new JTextField(20);
+        JTextField frequencyField = new JTextField(20);
+        JTextField durationDaysField = new JTextField(20);
+        JTextField quantityField = new JTextField(20);
+        JTextField instructionsField = new JTextField(20);
+        JTextField pharmacyField = new JTextField(20);
+
+        JComboBox<String> statusBox = new JComboBox<>(new String[] {
+                "DRAFT", "ISSUED", "DISPENSED", "COLLECTED", "CANCELLED"
+        });
 
         panel.add(new JLabel("Patient ID (e.g. P001):"));
         panel.add(patientIdField);
@@ -610,14 +638,35 @@ public class HmsView extends JFrame {
         panel.add(new JLabel("Medication Name:"));
         panel.add(medicationField);
 
+        panel.add(new JLabel("Dosage (e.g. 500mg):"));
+        panel.add(dosageField);
+
+        panel.add(new JLabel("Frequency (e.g. Once daily):"));
+        panel.add(frequencyField);
+
+        panel.add(new JLabel("Duration Days (e.g. 7):"));
+        panel.add(durationDaysField);
+
+        panel.add(new JLabel("Quantity (e.g. 28 tablets):"));
+        panel.add(quantityField);
+
+        panel.add(new JLabel("Instructions:"));
+        panel.add(instructionsField);
+
         panel.add(new JLabel("Pharmacy Name:"));
         panel.add(pharmacyField);
 
-        panel.add(new JLabel("Status (Draft/Issued/Dispensed/Collected/Cancelled):"));
-        panel.add(statusField);
+        panel.add(new JLabel("Status:"));
+        panel.add(statusBox);
 
+        mainPanel.add(panel, BorderLayout.CENTER);
+
+        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton saveButton = new JButton("Save");
         JButton cancelButton = new JButton("Cancel");
+        buttonsPanel.add(saveButton);
+        buttonsPanel.add(cancelButton);
+        mainPanel.add(buttonsPanel, BorderLayout.SOUTH);
 
         saveButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -625,18 +674,25 @@ public class HmsView extends JFrame {
                 String clinicianId = clinicianIdField.getText().trim();
                 String appointmentId = appointmentIdField.getText().trim();
                 String medication = medicationField.getText().trim();
+                String dosage = dosageField.getText().trim();
+                String frequency = frequencyField.getText().trim();
+                String durationDays = durationDaysField.getText().trim();
+                String quantity = quantityField.getText().trim();
+                String instructions = instructionsField.getText().trim();
                 String pharmacy = pharmacyField.getText().trim();
-                String status = statusField.getText().trim();
+                String status = (String) statusBox.getSelectedItem();
 
-                if (patientId.isEmpty() || clinicianId.isEmpty() || medication.isEmpty()
-                        || pharmacy.isEmpty() || status.isEmpty()) {
+                if (patientId.isEmpty() || clinicianId.isEmpty() || medication.isEmpty() || pharmacy.isEmpty()) {
                     showErrorMessage("Please complete all required fields");
                     return;
                 }
 
                 if (createPrescriptionListener != null) {
                     createPrescriptionListener.onCreatePrescription(
-                            patientId, clinicianId, appointmentId, medication, pharmacy, status
+                            patientId, clinicianId, appointmentId,
+                            medication, dosage, frequency,
+                            durationDays, quantity, instructions,
+                            pharmacy, status
                     );
                 }
 
@@ -650,12 +706,13 @@ public class HmsView extends JFrame {
             }
         });
 
-        panel.add(saveButton);
-        panel.add(cancelButton);
-
-        dialog.add(panel);
+        dialog.setContentPane(mainPanel);
+        dialog.pack();
+        dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
     }
+
+
 
     private void showUpdatePrescriptionDialog() {
         int selectedRow = (prescriptionsTable == null) ? -1 : prescriptionsTable.getSelectedRow();
@@ -802,15 +859,16 @@ public class HmsView extends JFrame {
 
     private void showCreateAppointmentDialog() {
         JDialog dialog = new JDialog(this, "Create Appointment", true);
-        dialog.setSize(450, 250);
-        dialog.setLocationRelativeTo(this);
+        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
-        JPanel panel = new JPanel(new GridLayout(4, 2, 10, 10));
-        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        JTextField patientIdField = new JTextField();
-        JTextField clinicianIdField = new JTextField();
-        JTextField dateField = new JTextField();
+        JPanel panel = new JPanel(new GridLayout(3, 2, 10, 10));
+
+        JTextField patientIdField = new JTextField(20);
+        JTextField clinicianIdField = new JTextField(20);
+        JTextField dateField = new JTextField(20);
 
         panel.add(new JLabel("Patient ID (e.g. P001):"));
         panel.add(patientIdField);
@@ -821,8 +879,14 @@ public class HmsView extends JFrame {
         panel.add(new JLabel("Appointment Date (e.g. 2025-12-22):"));
         panel.add(dateField);
 
+        mainPanel.add(panel, BorderLayout.CENTER);
+
+        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton saveButton = new JButton("Save");
         JButton cancelButton = new JButton("Cancel");
+        buttonsPanel.add(saveButton);
+        buttonsPanel.add(cancelButton);
+        mainPanel.add(buttonsPanel, BorderLayout.SOUTH);
 
         saveButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -849,12 +913,12 @@ public class HmsView extends JFrame {
             }
         });
 
-        panel.add(saveButton);
-        panel.add(cancelButton);
-
-        dialog.add(panel);
+        dialog.setContentPane(mainPanel);
+        dialog.pack();
+        dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
     }
+
 
     private void showUpdateAppointmentDialog() {
         int selectedRow = (appointmentsTable == null) ? -1 : appointmentsTable.getSelectedRow();
@@ -906,10 +970,6 @@ public class HmsView extends JFrame {
 
     // ========== Helper methods ==========
 
-    private void showErrorMessage(String message) {
-        JOptionPane.showMessageDialog(this, message, "Error", JOptionPane.ERROR_MESSAGE);
-    }
-
     private String safeLabelPatient(HmsModel model, String patientId) {
         if (model == null) return patientId;
         try { return model.formatPatientLabel(patientId); }
@@ -930,75 +990,55 @@ public class HmsView extends JFrame {
 
     // ========== Listener setters ==========
 
-    public void setRefreshPatientsListener(Runnable listener) { this.refreshPatientsListener = listener; }
-    public void setRefreshReferralsListener(Runnable listener) { this.refreshReferralsListener = listener; }
-    public void setRefreshPrescriptionsListener(Runnable listener) { this.refreshPrescriptionsListener = listener; }
-    public void setRefreshAppointmentsListener(Runnable listener) { this.refreshAppointmentsListener = listener; }
+    public void setRefreshPatientsListener(Runnable listener) {
+        this.refreshPatientsListener = listener; }
 
-    public void setCreateReferralListener(CreateReferralListener listener) { this.createReferralListener = listener; }
-    public void setCreatePrescriptionListener(CreatePrescriptionListener listener) { this.createPrescriptionListener = listener; }
-    public void setCreateAppointmentListener(CreateAppointmentListener listener) { this.createAppointmentListener = listener; }
+    public void setRefreshReferralsListener(Runnable listener) {
+        this.refreshReferralsListener = listener; }
 
-    public void setUpdateReferralListener(UpdateReferralListener listener) { this.updateReferralListener = listener; }
-    public void setUpdatePrescriptionListener(UpdatePrescriptionListener listener) { this.updatePrescriptionListener = listener; }
-    public void setUpdateAppointmentListener(UpdateAppointmentListener listener) { this.updateAppointmentListener = listener; }
+    public void setRefreshPrescriptionsListener(Runnable listener) {
+        this.refreshPrescriptionsListener = listener; }
 
-    public void setCancelAppointmentListener(CancelAppointmentListener listener) { this.cancelAppointmentListener = listener; }
+    public void setRefreshAppointmentsListener(Runnable listener) {
+        this.refreshAppointmentsListener = listener; }
 
-    public void setPrintReferralListener(PrintReferralListener listener) { this.printReferralListener = listener; }
-    public void setPrintPrescriptionListener(PrintPrescriptionListener listener) { this.printPrescriptionListener = listener; }
+    public void setCreateReferralListener(CreateReferralListener listener) {
+        this.createReferralListener = listener; }
 
-    public void setOnCloseListener(Runnable listener) { this.onCloseListener = listener; }
+    public void setCreatePrescriptionListener(CreatePrescriptionListener listener) {
+        this.createPrescriptionListener = listener; }
 
-    // =====================================================================================
-    // Listener interfaces
-    // =====================================================================================
+    public void setCreateAppointmentListener(CreateAppointmentListener listener) {
+        this.createAppointmentListener = listener; }
 
-    public interface CreateReferralListener {
-        void onCreateReferral(String patientId,
-                              String referringFacilityId,
-                              String referredToFacilityId,
-                              String referringClinicianId,
-                              String referredToClinicianId,
-                              String urgency,
-                              String reason,
-                              String summary);
+    public void setUpdateReferralListener(UpdateReferralListener listener) {
+        this.updateReferralListener = listener; }
+
+    public void setUpdatePrescriptionListener(UpdatePrescriptionListener listener) {
+        this.updatePrescriptionListener = listener; }
+
+    public void setUpdateAppointmentListener(UpdateAppointmentListener listener) {
+        this.updateAppointmentListener = listener; }
+
+    public void setCancelAppointmentListener(CancelAppointmentListener listener) {
+        this.cancelAppointmentListener = listener; }
+
+    public void setPrintReferralListener(PrintReferralListener listener) {
+        this.printReferralListener = listener; }
+
+    public void setPrintPrescriptionListener(PrintPrescriptionListener listener) {
+        this.printPrescriptionListener = listener; }
+
+    public void setOnCloseListener(Runnable listener) {
+        this.onCloseListener = listener; }
+
+    // ========== Utility Methods ==========
+
+    public void showSuccessMessage(String message) {
+        JOptionPane.showMessageDialog(this, message, "Success", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    public interface UpdateReferralListener {
-        void onUpdateReferralStatus(String referralId, String newStatus);
-    }
-
-    public interface PrintReferralListener {
-        void onPrintReferral(String referralId);
-    }
-
-    public interface CreatePrescriptionListener {
-        void onCreatePrescription(String patientId,
-                                  String clinicianId,
-                                  String appointmentId,
-                                  String medicationName,
-                                  String pharmacyName,
-                                  String status);
-    }
-
-    public interface UpdatePrescriptionListener {
-        void onUpdatePrescriptionStatus(String prescriptionId, String newStatus);
-    }
-
-    public interface PrintPrescriptionListener {
-        void onPrintPrescription(String prescriptionId);
-    }
-
-    public interface CreateAppointmentListener {
-        void onCreateAppointment(String patientId, String clinicianId, String date);
-    }
-
-    public interface UpdateAppointmentListener {
-        void onUpdateAppointmentStatus(String appointmentId, String newStatus);
-    }
-
-    public interface CancelAppointmentListener {
-        void onCancelAppointment(String appointmentId);
+    public void showErrorMessage(String message) {
+        JOptionPane.showMessageDialog(this, message, "Error", JOptionPane.ERROR_MESSAGE);
     }
 }

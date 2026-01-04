@@ -1,6 +1,6 @@
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
+import java.util.Date;
 import java.text.SimpleDateFormat;
 
 /**
@@ -70,6 +70,199 @@ public class HmsModel {
         saveReferrals();
     }
 
+    // ========== Patient Management ==========
+
+    private void loadPatients() {
+        ArrayList<String> lines = CSVHandler.readLines(PATIENTS_FILE);
+        for (int i = 1; i < lines.size(); i++) { // skip header row
+            Patient patient = Patient.fromCSV(lines.get(i));
+            if (patient == null) continue;
+            patients.put(patient.getPatientId(), patient);
+        }
+    }
+
+    private void savePatients() {
+        ArrayList<String> lines = new ArrayList<String>();
+        lines.add("patient_id,first_name,last_name,date_of_birth,nhs_number,gender,phone_number,email,address," +
+                "postcode,emergency_contact_name,emergency_contact_phone,registration_date,gp_surgery_id");
+
+        ArrayList<Patient> list = new ArrayList<Patient>(patients.values());
+        for (int i = 0; i < list.size(); i++) {
+            lines.add(list.get(i).toCSV());
+        }
+        CSVHandler.writeLines(PATIENTS_FILE, lines);
+    }
+
+    // ========== Clinician Management ==========
+
+    private void loadClinicians() {
+        ArrayList<String> lines = CSVHandler.readLines(CLINICIANS_FILE);
+        for (int i = 1; i < lines.size(); i++) {
+            Clinician clinician = Clinician.fromCSV(lines.get(i));
+            if (clinician == null) continue;
+            clinicians.put(clinician.getClinicianId(), clinician);
+        }
+    }
+
+    private void saveClinicians() {
+        ArrayList<String> lines = new ArrayList<String>();
+        lines.add("clinician_id,first_name,last_name,title,speciality,gmc_number,phone_number,email,workplace_id," +
+                "workplace_type,employment_status,start_date");
+
+        ArrayList<Clinician> list = new ArrayList<Clinician>(clinicians.values());
+        for (int i = 0; i < list.size(); i++) {
+            lines.add(list.get(i).toCSV());
+        }
+        CSVHandler.writeLines(CLINICIANS_FILE, lines);
+    }
+
+    // ========== Facility Management ==========
+
+    private void loadFacilities() {
+        ArrayList<String> lines = CSVHandler.readLines(FACILITIES_FILE);
+        for (int i = 1; i < lines.size(); i++) {
+            Facility facility = Facility.fromCSV(lines.get(i));
+            if (facility == null) continue;
+            facilities.put(facility.getFacilityId(), facility);
+        }
+    }
+
+    private void saveFacilities() {
+        ArrayList<String> lines = new ArrayList<String>();
+        lines.add("facility_id,facility_name,facility_type,address,postcode,phone_number,email,opening_hours," +
+                "manager_name,capacity,specialities_offered");
+
+        ArrayList<Facility> list = new ArrayList<Facility>(facilities.values());
+        for (int i = 0; i < list.size(); i++) {
+            lines.add(list.get(i).toCSV());
+        }
+        CSVHandler.writeLines(FACILITIES_FILE, lines);
+    }
+
+    // ========== Appointment Management ==========
+
+    private void loadAppointments() {
+        ArrayList<String> lines = CSVHandler.readLines(APPOINTMENTS_FILE);
+        for (int i = 1; i < lines.size(); i++) {
+            Appointment appointment = Appointment.fromCSV(lines.get(i));
+            if (appointment == null) continue;
+            appointments.put(appointment.getAppointmentId(), appointment);
+        }
+    }
+
+    private void saveAppointments() {
+        ArrayList<String> lines = new ArrayList<String>();
+        lines.add("appointment_id,patient_id,clinician_id,facility_id,appointment_date,appointment_time," +
+                "duration_minutes,appointment_type,status,reason_for_visit,notes,created_date,last_modified");
+
+        ArrayList<Appointment> list = new ArrayList<Appointment>(appointments.values());
+        for (int i = 0; i < list.size(); i++) {
+            lines.add(list.get(i).toCSV());
+        }
+        CSVHandler.writeLines(APPOINTMENTS_FILE, lines);
+    }
+
+    public void addAppointment(Appointment appointment) {
+        if (appointment == null) return;
+        appointments.put(appointment.getAppointmentId(), appointment);
+        saveAppointments();
+    }
+
+    public void updateAppointment(Appointment appointment) {
+        if (appointment == null) return;
+        appointments.put(appointment.getAppointmentId(), appointment);
+        saveAppointments();
+    }
+
+    public boolean cancelAppointment(String appointmentId) {
+        if (appointmentId == null || appointmentId.trim().isEmpty()) return false;
+
+        Appointment appointment = appointments.get(appointmentId.trim());
+        if (appointment == null) return false;
+
+        try {
+            appointment.setStatus("CANCELLED");
+        } catch (Exception e) {
+        }
+
+        appointment.setLastModified(new Date());
+        saveAppointments();
+        return true;
+    }
+
+    // ========== Prescription Management ==========
+
+    private void loadPrescriptions() {
+        ArrayList<String> lines = CSVHandler.readLines(PRESCRIPTIONS_FILE);
+        for (int i = 1; i < lines.size(); i++) {
+            Prescription prescription = Prescription.fromCSV(lines.get(i));
+            if (prescription == null) continue;
+            prescriptions.put(prescription.getPrescriptionId(), prescription);
+        }
+    }
+
+    private void savePrescriptions() {
+        ArrayList<String> lines = new ArrayList<String>();
+        lines.add("prescription_id,patient_id,clinician_id,appointment_id,prescription_date,medication_name," +
+                "dosage,frequency,duration_days,quantity,instructions,pharmacy_name,status,issue_date,collection_date");
+
+        ArrayList<Prescription> list = new ArrayList<Prescription>(prescriptions.values());
+        for (int i = 0; i < list.size(); i++) {
+            lines.add(list.get(i).toCSV());
+        }
+        CSVHandler.writeLines(PRESCRIPTIONS_FILE, lines);
+    }
+
+    public void addPrescription(Prescription prescription) {
+        if (prescription == null) return;
+        prescriptions.put(prescription.getPrescriptionId(), prescription);
+        savePrescriptions();
+    }
+
+    public void updatePrescription(Prescription prescription) {
+        if (prescription == null) return;
+        prescriptions.put(prescription.getPrescriptionId(), prescription);
+        savePrescriptions();
+    }
+
+    // ========== Referral Management ==========
+
+    private void loadReferrals() {
+        ArrayList<String> lines = CSVHandler.readLines(REFERRALS_FILE);
+        for (int i = 1; i < lines.size(); i++) {
+            Referral referral = Referral.fromCSV(lines.get(i));
+            if (referral == null) continue;
+            referrals.put(referral.getReferralId(), referral);
+        }
+    }
+
+    private void saveReferrals() {
+        ArrayList<String> lines = new ArrayList<String>();
+        lines.add("referral_id,patient_id,referring_clinician_id,referred_to_clinician_id,referring_facility_id,referred_to_facility_id,referral_date,urgency_level,referral_reason,clinical_summary,requested_investigations,status,appointment_id,notes,created_date,last_updated,communication_method");
+
+        ArrayList<Referral> list = new ArrayList<Referral>(referrals.values());
+        for (int i = 0; i < list.size(); i++) {
+            lines.add(list.get(i).toCSV());
+        }
+        CSVHandler.writeLines(REFERRALS_FILE, lines);
+    }
+
+    public void addReferral(Referral referral) {
+        if (referral == null) return;
+
+        referrals.put(referral.getReferralId(), referral);
+        saveReferrals();
+
+        referralManager.addReferral(referral);
+        CSVHandler.appendLine(REFERRAL_EMAIL_FILE, formatReferralEmailSummary(referral));
+    }
+
+    public void updateReferral(Referral referral) {
+        if (referral == null) return;
+        referrals.put(referral.getReferralId(), referral);
+        saveReferrals();
+    }
+
     // ========== Get All Methods ==========
 
     public ArrayList<Patient> getAllPatients() {
@@ -128,206 +321,6 @@ public class HmsModel {
         return referrals.get(referralId.trim());
     }
 
-    // ========== Patient Management ==========
-
-    private void loadPatients() {
-        ArrayList<String> lines = CSVHandler.readLines(PATIENTS_FILE);
-        for (int i = 1; i < lines.size(); i++) { // skip header row
-            Patient patient = Patient.fromCSV(lines.get(i));
-            if (patient == null) continue;
-            patients.put(patient.getPatientId(), patient);
-        }
-    }
-
-    private void savePatients() {
-        ArrayList<String> lines = new ArrayList<String>();
-        lines.add("patient_id,first_name,last_name,date_of_birth,nhs_number,gender,phone_number,email,address," +
-                "postcode,emergency_contact_name,emergency_contact_phone,registration_date,gp_surgery_id");
-
-        ArrayList<Patient> list = new ArrayList<Patient>(patients.values());
-        for (int i = 0; i < list.size(); i++) {
-            lines.add(list.get(i).toCSV());
-        }
-
-        CSVHandler.writeLines(PATIENTS_FILE, lines);
-    }
-
-    // ========== Clinician Management ==========
-
-    private void loadClinicians() {
-        ArrayList<String> lines = CSVHandler.readLines(CLINICIANS_FILE);
-        for (int i = 1; i < lines.size(); i++) {
-            Clinician clinician = Clinician.fromCSV(lines.get(i));
-            if (clinician == null) continue;
-            clinicians.put(clinician.getClinicianId(), clinician);
-        }
-    }
-
-    private void saveClinicians() {
-        ArrayList<String> lines = new ArrayList<String>();
-        lines.add("clinician_id,first_name,last_name,title,speciality,gmc_number,phone_number,email,workplace_id," +
-                "workplace_type,employment_status,start_date");
-
-        ArrayList<Clinician> list = new ArrayList<Clinician>(clinicians.values());
-        for (int i = 0; i < list.size(); i++) {
-            lines.add(list.get(i).toCSV());
-        }
-
-        CSVHandler.writeLines(CLINICIANS_FILE, lines);
-    }
-
-    // ========== Facility Management ==========
-
-    private void loadFacilities() {
-        ArrayList<String> lines = CSVHandler.readLines(FACILITIES_FILE);
-        for (int i = 1; i < lines.size(); i++) {
-            Facility facility = Facility.fromCSV(lines.get(i));
-            if (facility == null) continue;
-            facilities.put(facility.getFacilityId(), facility);
-        }
-    }
-
-    private void saveFacilities() {
-        ArrayList<String> lines = new ArrayList<String>();
-        lines.add("facility_id,facility_name,facility_type,address,postcode,phone_number,email,opening_hours," +
-                "manager_name,capacity,specialities_offered");
-
-        ArrayList<Facility> list = new ArrayList<Facility>(facilities.values());
-        for (int i = 0; i < list.size(); i++) {
-            lines.add(list.get(i).toCSV());
-        }
-
-        CSVHandler.writeLines(FACILITIES_FILE, lines);
-    }
-
-    // ========== Appointment Management ==========
-
-    private void loadAppointments() {
-        ArrayList<String> lines = CSVHandler.readLines(APPOINTMENTS_FILE);
-        for (int i = 1; i < lines.size(); i++) {
-            Appointment appointment = Appointment.fromCSV(lines.get(i));
-            if (appointment == null) continue;
-            appointments.put(appointment.getAppointmentId(), appointment);
-        }
-    }
-
-    private void saveAppointments() {
-        ArrayList<String> lines = new ArrayList<String>();
-        lines.add("appointment_id,patient_id,clinician_id,facility_id,appointment_date,appointment_time," +
-                "duration_minutes,appointment_type,status,reason_for_visit,notes,created_date,last_modified");
-
-        ArrayList<Appointment> list = new ArrayList<Appointment>(appointments.values());
-        for (int i = 0; i < list.size(); i++) {
-            lines.add(list.get(i).toCSV());
-        }
-
-        CSVHandler.writeLines(APPOINTMENTS_FILE, lines);
-    }
-
-    public void addAppointment(Appointment appointment) {
-        if (appointment == null) return;
-        appointments.put(appointment.getAppointmentId(), appointment);
-        saveAppointments();
-    }
-
-    public void updateAppointment(Appointment appointment) {
-        if (appointment == null) return;
-        appointments.put(appointment.getAppointmentId(), appointment);
-        saveAppointments();
-    }
-
-    public boolean cancelAppointment(String appointmentId) {
-        if (appointmentId == null || appointmentId.trim().isEmpty()) return false;
-
-        Appointment appointment = appointments.get(appointmentId.trim());
-        if (appointment == null) return false;
-
-        try {
-            appointment.setStatus("CANCELLED");
-        } catch (Exception e) {
-        }
-
-        appointment.setLastModified(new Date());
-        saveAppointments();
-        return true;
-    }
-
-    // ========== Prescription Management ==========
-
-    private void loadPrescriptions() {
-        ArrayList<String> lines = CSVHandler.readLines(PRESCRIPTIONS_FILE);
-        for (int i = 1; i < lines.size(); i++) {
-            Prescription prescription = Prescription.fromCSV(lines.get(i));
-            if (prescription == null) continue;
-            prescriptions.put(prescription.getPrescriptionId(), prescription);
-        }
-    }
-
-    private void savePrescriptions() {
-        ArrayList<String> lines = new ArrayList<String>();
-        lines.add("prescription_id,patient_id,clinician_id,appointment_id,prescription_date,medication_name," +
-                "dosage,frequency,duration_days,quantity,instructions,pharmacy_name,status,issue_date,collection_date");
-
-        ArrayList<Prescription> list = new ArrayList<Prescription>(prescriptions.values());
-        for (int i = 0; i < list.size(); i++) {
-            lines.add(list.get(i).toCSV());
-        }
-
-        CSVHandler.writeLines(PRESCRIPTIONS_FILE, lines);
-    }
-
-    public void addPrescription(Prescription prescription) {
-        if (prescription == null) return;
-        prescriptions.put(prescription.getPrescriptionId(), prescription);
-        savePrescriptions();
-    }
-
-    public void updatePrescription(Prescription prescription) {
-        if (prescription == null) return;
-        prescriptions.put(prescription.getPrescriptionId(), prescription);
-        savePrescriptions();
-    }
-
-    // ========== Referral Management ==========
-
-    private void loadReferrals() {
-        ArrayList<String> lines = CSVHandler.readLines(REFERRALS_FILE);
-        for (int i = 1; i < lines.size(); i++) {
-            Referral referral = Referral.fromCSV(lines.get(i));
-            if (referral == null) continue;
-            referrals.put(referral.getReferralId(), referral);
-        }
-    }
-
-    private void saveReferrals() {
-        ArrayList<String> lines = new ArrayList<String>();
-        lines.add("referral_id,patient_id,referring_clinician_id,referred_to_clinician_id,referring_facility_id,referred_to_facility_id,referral_date,urgency_level,referral_reason,clinical_summary,requested_investigations,status,appointment_id,notes,created_date,last_updated,communication_method");
-
-        ArrayList<Referral> list = new ArrayList<Referral>(referrals.values());
-        for (int i = 0; i < list.size(); i++) {
-            lines.add(list.get(i).toCSV());
-        }
-
-        CSVHandler.writeLines(REFERRALS_FILE, lines);
-    }
-
-    public void addReferral(Referral referral) {
-        if (referral == null) return;
-
-        referrals.put(referral.getReferralId(), referral);
-        saveReferrals();
-
-        referralManager.addReferral(referral);
-
-        CSVHandler.appendLine(REFERRAL_EMAIL_FILE, formatReferralEmailSummary(referral));
-    }
-
-    public void updateReferral(Referral referral) {
-        if (referral == null) return;
-        referrals.put(referral.getReferralId(), referral);
-        saveReferrals();
-    }
-
     // ========== User Friendly Labels ==========
 
     public String formatPatientLabel(String patientId) {
@@ -359,39 +352,85 @@ public class HmsModel {
         return facility.getFacilityId() + " - " + facility.getFacilityName();
     }
 
-    // ========== Create Basic Files ==========
+    // ========== Create Files ==========
 
-    public Prescription createBasicPrescription(String prescriptionId, String patientId, String clinicianId,
-                                                String appointmentId, String medicationName, String pharmacyName,
-                                                String status) {
+    public boolean createPrescription(String patientId, String clinicianId,
+                                      String appointmentId, String medicationName, String dosage,
+                                      String frequency, String durationDays, String quantity,
+                                      String instructions, String pharmacyName, String status) {
+
+        String prescriptionId = generatePrescriptionId();
 
         String csv =
-                safe(prescriptionId) + "," + safe(patientId) + "," + safe(clinicianId) + "," + safe(appointmentId)
-                        + "," + "," + safe(medicationName) + "," + "," + "," + "," + "," + "," + safe(pharmacyName)
-                        + "," + safe(status) + "," + "," + "";
-        return Prescription.fromCSV(csv);
+                safe(prescriptionId) + "," + safe(patientId) + "," + safe(clinicianId) + "," +
+                        safe(appointmentId) + "," + "" + "," + safe(medicationName) + "," + safe(dosage) + "," +
+                        safe(frequency) + "," + safe(durationDays) + "," + safe(quantity) + "," +
+                        safe(instructions) + "," + safe(pharmacyName) + "," + safe(status) + "," + "" + "," + "";
+
+        Prescription prescription = Prescription.fromCSV(csv);
+        if (prescription == null) return false;
+
+        prescriptions.put(prescription.getPrescriptionId(), prescription);
+        savePrescriptions();
+        return true;
     }
 
-    public Appointment createBasicAppointment(String appointmentId, String patientId, String clinicianId,
-                                              String date) {
+    public boolean createAppointment(String patientId, String clinicianId, String date) {
+
+        String appointmentId = generateAppointmentId();
 
         String csv =
-                safe(appointmentId) + "," + safe(patientId) + "," + safe(clinicianId) + "," + "," + safe(date) + "," +
+                safe(appointmentId) + "," + safe(patientId) + "," + safe(clinicianId) + "," +
+                        "," + safe(date) + "," +
                         "," + "," + "," + "SCHEDULED," + "," + "," + "," + "";
-        return Appointment.fromCSV(csv);
+
+        Appointment appointment = Appointment.fromCSV(csv);
+        if (appointment == null) return false;
+
+        appointments.put(appointment.getAppointmentId(), appointment);
+        saveAppointments();
+        return true;
     }
 
-    public Referral createBasicReferral(String referralId, String patientId, String referringClinicianId,
-                                        String referredToClinicianId, String referringFacilityId,
-                                        String referredToFacilityId, String urgency, String reason, String summary) {
+    public boolean createReferral(String patientId, String referringClinicianId,
+                                  String referredToClinicianId, String referringFacilityId,
+                                  String referredToFacilityId, String urgency, String reason, String summary,
+                                  String investigations, String appointmentId, String notes) {
+
+        String referralId = generateReferralId();
 
         String csv =
-                safe(referralId) + "," + safe(patientId) + "," + safe(referringClinicianId) + "," +
-                        safe(referredToClinicianId) + "," + safe(referringFacilityId) + "," +
-                        safe(referredToFacilityId) + "," + "," + safe(urgency) + "," + safe(reason) + "," +
-                        safe(summary) + "," + "," + "NEW," + "," + "," + "," + "," + "";
-        return Referral.fromCSV(csv);
+                safe(referralId) + "," +                           // referral_id
+                        safe(patientId) + "," +                            // patient_id
+                        safe(referringClinicianId) + "," +                 // referring_clinician_id
+                        safe(referredToClinicianId) + "," +                // referred_to_clinician_id
+                        safe(referringFacilityId) + "," +                  // referring_facility_id
+                        safe(referredToFacilityId) + "," +                 // referred_to_facility_id
+                        "" + "," +                                         // referral_date (blank = parser may default)
+                        safe(urgency) + "," +                              // urgency_level
+                        safe(reason) + "," +                               // referral_reason
+                        safe(summary) + "," +                              // clinical_summary
+                        safe(investigations) + "," +                       // requested_investigations
+                        "NEW" + "," +                                      // status
+                        safe(appointmentId) + "," +                        // appointment_id
+                        safe(notes) + "," +                                // notes
+                        "" + "," +                                         // created_date
+                        "" + "," +                                         // last_updated
+                        "";                                                // communication_method
+
+        Referral referral = Referral.fromCSV(csv);
+        if (referral == null) return false;
+
+        referrals.put(referral.getReferralId(), referral);
+        saveReferrals();
+
+        referralManager.addReferral(referral);
+        CSVHandler.appendLine(REFERRAL_EMAIL_FILE, formatReferralEmailSummary(referral));
+
+        return true;
     }
+
+
 
     // ========== Printing (Simulation) ==========
 
@@ -455,7 +494,7 @@ public class HmsModel {
                 " status=" + safe(referral.getStatus());
     }
 
-    // ========== ID Generation ==========
+    // ========== ID Gemnerator ==========
 
     private void initialiseIdCounters() {
         for (String id : referrals.keySet()) {
@@ -478,14 +517,14 @@ public class HmsModel {
         if (id == null) return -1;
         String str = id.trim();
 
-        while (str.length() > 0 && !Character.isDigit(str.charAt(0))) {
+        while (str.length() > 0 && !Character.isDigit(str.charAt(0))) { // https://www.geeksforgeeks.org/java/character-isdigit-method-in-java-with-examples/
             str = str.substring(1);
         }
 
         if (!str.matches("\\d+")) return -1;
 
         try {
-            return Integer.parseInt(str);
+            return Integer.parseInt(str); // https://www.geeksforgeeks.org/java/integer-valueof-vs-integer-parseint-with-examples/
         } catch (Exception e) {
             return -1;
         }
@@ -509,7 +548,7 @@ public class HmsModel {
         return "AP" + str;
     }
 
-    // ========== Small Helpers ==========
+    // ========== Helpers ==========
 
     private String formatDate(Date date) {
         if (date == null) return "";

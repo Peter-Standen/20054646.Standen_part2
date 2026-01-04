@@ -1,8 +1,10 @@
+// This is almost directly taken from the Bookshop eaxample
+
 import javax.swing.SwingUtilities;
 
 /**
  * Main Application class for the Healthcare Management System
- * Initializes and wires together the Model, View, and Controller components
+ * Initialises and wires together the Model, View, and Controller components
  */
 public class HmsApplication {
 
