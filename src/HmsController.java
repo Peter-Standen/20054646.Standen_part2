@@ -88,8 +88,11 @@ public class HmsController {
         });
 
         view.setCreateAppointmentListener(new CreateAppointmentListener() {
-            public void onCreateAppointment(String patientId, String clinicianId, String date) {
-                handleCreateAppointment(patientId, clinicianId, date);
+            public void onCreateAppointment(String patientId, String clinicianId, String facilityId, String date,
+                                            String time, String durationMinutes, String appointmentType, String status,
+                                            String reason, String notes) {
+                handleCreateAppointment(patientId, clinicianId, facilityId, date, time, durationMinutes,
+                        appointmentType, status, reason, notes);
             }
         });
 
@@ -226,9 +229,12 @@ public class HmsController {
         view.refreshAppointmentsTable(getAllAppointments(), model);
     }
 
-    private void handleCreateAppointment(String patientId, String clinicianId, String date) {
+    private void handleCreateAppointment(String patientId, String clinicianId, String facilityId, String date,
+                                         String time, String durationMinutes, String appointmentType, String status,
+                                         String reason, String notes) {
 
-        boolean ok = model.createAppointment(patientId, clinicianId, date);
+        boolean ok = model.createAppointment(patientId, clinicianId, facilityId, date, time, durationMinutes,
+                appointmentType, status, reason, notes);
 
         if (ok) {
             view.showSuccessMessage("Appointment created successfully!");
@@ -334,7 +340,9 @@ interface PrintPrescriptionListener {
 }
 
 interface CreateAppointmentListener {
-    void onCreateAppointment(String patientId, String clinicianId, String date);
+    void onCreateAppointment(String patientId, String clinicianId, String facilityId, String date,
+                             String time, String durationMinutes, String appointmentType, String status,
+                             String reason, String notes);
 }
 
 interface UpdateAppointmentListener {

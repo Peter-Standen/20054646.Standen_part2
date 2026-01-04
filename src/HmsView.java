@@ -68,7 +68,7 @@ public class HmsView extends JFrame {
 
     public HmsView() {
         setTitle("Healthcare Management System - MVC Architecture");
-        setSize(1900, 1000);
+        setSize(1900, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -862,22 +862,57 @@ public class HmsView extends JFrame {
         JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        JPanel panel = new JPanel(new GridLayout(3, 2, 10, 10));
+        // 7 fields = 7 rows, 2 columns
+        JPanel formPanel = new JPanel(new GridLayout(10, 2, 10, 10));
 
         JTextField patientIdField = new JTextField(20);
         JTextField clinicianIdField = new JTextField(20);
+        JTextField facilityIdField = new JTextField(20);
         JTextField dateField = new JTextField(20);
+        JTextField timeField = new JTextField(20);
+        JTextField durationField = new JTextField(20);
+        JTextField reasonField = new JTextField(20);
+        JTextField notesField = new JTextField(20);
 
-        panel.add(new JLabel("Patient ID (e.g. P001):"));
-        panel.add(patientIdField);
+        JComboBox<String> typeBox = new JComboBox<>(new String[] {
+                "CONSULTATION", "FOLLOW_UP", "PROCEDURE"
+        });
 
-        panel.add(new JLabel("Clinician ID (optional, e.g. C001):"));
-        panel.add(clinicianIdField);
+        JComboBox<String> statusBox = new JComboBox<>(new String[] {
+                "SCHEDULED", "COMPLETED", "CANCELLED"
+        });
 
-        panel.add(new JLabel("Appointment Date (e.g. 2025-12-22):"));
-        panel.add(dateField);
+        formPanel.add(new JLabel("Patient ID (e.g. P001):"));
+        formPanel.add(patientIdField);
 
-        mainPanel.add(panel, BorderLayout.CENTER);
+        formPanel.add(new JLabel("Clinician ID (e.g. C001):"));
+        formPanel.add(clinicianIdField);
+
+        formPanel.add(new JLabel("Facility ID (e.g. F001):"));
+        formPanel.add(facilityIdField);
+
+        formPanel.add(new JLabel("Appointment Date (yyyy-MM-dd):"));
+        formPanel.add(dateField);
+
+        formPanel.add(new JLabel("Time (HH:mm):"));
+        formPanel.add(timeField);
+
+        formPanel.add(new JLabel("Duration (minutes):"));
+        formPanel.add(durationField);
+
+        formPanel.add(new JLabel("Appointment Type:"));
+        formPanel.add(typeBox);
+
+        formPanel.add(new JLabel("Status:"));
+        formPanel.add(statusBox);
+
+        formPanel.add(new JLabel("Reason:"));
+        formPanel.add(reasonField);
+
+        formPanel.add(new JLabel("Notes:"));
+        formPanel.add(notesField);
+
+        mainPanel.add(formPanel, BorderLayout.CENTER);
 
         JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton saveButton = new JButton("Save");
@@ -886,30 +921,32 @@ public class HmsView extends JFrame {
         buttonsPanel.add(cancelButton);
         mainPanel.add(buttonsPanel, BorderLayout.SOUTH);
 
-        saveButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                String patientId = patientIdField.getText().trim();
-                String clinicianId = clinicianIdField.getText().trim();
-                String date = dateField.getText().trim();
+        saveButton.addActionListener(e -> {
+            String patientId = patientIdField.getText().trim();
+            String clinicianId = clinicianIdField.getText().trim();
+            String facilityId = facilityIdField.getText().trim();
+            String date = dateField.getText().trim();
+            String time = timeField.getText().trim();
+            String duration = durationField.getText().trim();
+            String type = (String) typeBox.getSelectedItem();
+            String status = (String) statusBox.getSelectedItem();
+            String reason = reasonField.getText().trim();
+            String notes = notesField.getText().trim();
 
-                if (patientId.isEmpty() || date.isEmpty()) {
-                    showErrorMessage("Please enter Patient ID and Date");
-                    return;
-                }
-
-                if (createAppointmentListener != null) {
-                    createAppointmentListener.onCreateAppointment(patientId, clinicianId, date);
-                }
-
-                dialog.dispose();
+            if (patientId.isEmpty() || facilityId.isEmpty() || date.isEmpty()) {
+                showErrorMessage("Patient ID, Facility ID, and Date are required");
+                return;
             }
+
+            if (createAppointmentListener != null) {
+                createAppointmentListener.onCreateAppointment(patientId, clinicianId, facilityId, date, time,
+                        duration, type, status, reason, notes);
+            }
+
+            dialog.dispose();
         });
 
-        cancelButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                dialog.dispose();
-            }
-        });
+        cancelButton.addActionListener(e -> dialog.dispose());
 
         dialog.setContentPane(mainPanel);
         dialog.pack();

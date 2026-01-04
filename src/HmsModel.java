@@ -375,14 +375,18 @@ public class HmsModel {
         return true;
     }
 
-    public boolean createAppointment(String patientId, String clinicianId, String date) {
+    public boolean createAppointment(String patientId,
+                                     String clinicianId, String facilityId, String date, String time,
+                                     String durationMinutes, String appointmentType, String status,
+                                     String reason, String notes) {
 
         String appointmentId = generateAppointmentId();
 
         String csv =
-                safe(appointmentId) + "," + safe(patientId) + "," + safe(clinicianId) + "," +
-                        "," + safe(date) + "," +
-                        "," + "," + "," + "SCHEDULED," + "," + "," + "," + "";
+                safe(appointmentId) + "," + safe(patientId) + "," + safe(clinicianId) + "," + safe(facilityId) + "," +
+                        safe(date) + "," + safe(time) + "," + safe(durationMinutes) + "," +
+                        safe(appointmentType) + "," + safe(status) + "," + safe(reason) + "," + safe(notes) + "," +
+                        "" + "," + "";
 
         Appointment appointment = Appointment.fromCSV(csv);
         if (appointment == null) return false;
