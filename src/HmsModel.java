@@ -25,7 +25,6 @@ public class HmsModel {
     private static final String REFERRALS_FILE = "referrals.csv";
 
     // Print simulation files
-    private static final String REFERRAL_EMAIL_FILE = "referral_emails.txt";
     private static final String REFERRAL_PRINT_FILE = "referral_prints.txt";
     private static final String PRESCRIPTION_PRINT_FILE = "prescription_prints.txt";
     private static final SimpleDateFormat PRINT_DF = new SimpleDateFormat("dd/MM/yyyy HH:mm");
@@ -44,7 +43,6 @@ public class HmsModel {
 
         referralManager = ReferralManager.getInstance();
 
-        CSVHandler.createFileIfNotExists(REFERRAL_EMAIL_FILE);
         CSVHandler.createFileIfNotExists(REFERRAL_PRINT_FILE);
         CSVHandler.createFileIfNotExists(PRESCRIPTION_PRINT_FILE);
 
@@ -253,8 +251,6 @@ public class HmsModel {
         referrals.put(referral.getReferralId(), referral);
         saveReferrals();
 
-        referralManager.addReferral(referral);
-        CSVHandler.appendLine(REFERRAL_EMAIL_FILE, formatReferralEmailSummary(referral));
     }
 
     public void updateReferral(Referral referral) {
@@ -427,9 +423,6 @@ public class HmsModel {
 
         referrals.put(referral.getReferralId(), referral);
         saveReferrals();
-
-        referralManager.addReferral(referral);
-        CSVHandler.appendLine(REFERRAL_EMAIL_FILE, formatReferralEmailSummary(referral));
 
         return true;
     }
