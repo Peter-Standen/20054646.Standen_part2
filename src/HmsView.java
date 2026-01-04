@@ -82,7 +82,7 @@ public class HmsView extends JFrame {
     private void initComponents() {
         tabbedPane = new JTabbedPane();
 
-        // Build role selection bar (no login, just view switching), additional user selection code!
+        // Build role selection bar, additional user selection code!
         rolePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         roleLabel = new JLabel("Current role: (none)");
         roleLabel.setFont(new Font("Arial", Font.BOLD, 12));
@@ -138,8 +138,6 @@ public class HmsView extends JFrame {
     public void applyRole(String role) {
         if (role == null) role = "";
         currentRole = role.trim().toUpperCase();
-
-        // Rebuild tabs in a deterministic order
         tabbedPane.removeAll();
 
         if ("ADMIN".equals(currentRole)) {
@@ -155,7 +153,7 @@ public class HmsView extends JFrame {
             tabbedPane.addTab("Prescriptions", createPrescriptionsPanel());
             tabbedPane.addTab("Appointments", createAppointmentsPanel());
         } else {
-            // Unknown role, show everything (safe fallback)
+            // If its an unknown role, show everything
             tabbedPane.addTab("Patients", createPatientsPanel());
             tabbedPane.addTab("Referrals", createReferralsPanel());
             tabbedPane.addTab("Prescriptions", createPrescriptionsPanel());

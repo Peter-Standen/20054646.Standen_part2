@@ -167,7 +167,6 @@ public class HmsController {
         }
 
         model.printReferralToFile(referral);
-        // if your HmsView only has showErrorMessage, keep that, but bookshop-style is success message
         view.showSuccessMessage("Referral printed to file.");
     }
 
