@@ -400,23 +400,11 @@ public class HmsModel {
         String referralId = generateReferralId();
 
         String csv =
-                safe(referralId) + "," +                           // referral_id
-                        safe(patientId) + "," +                            // patient_id
-                        safe(referringClinicianId) + "," +                 // referring_clinician_id
-                        safe(referredToClinicianId) + "," +                // referred_to_clinician_id
-                        safe(referringFacilityId) + "," +                  // referring_facility_id
-                        safe(referredToFacilityId) + "," +                 // referred_to_facility_id
-                        "" + "," +                                         // referral_date (blank = parser may default)
-                        safe(urgency) + "," +                              // urgency_level
-                        safe(reason) + "," +                               // referral_reason
-                        safe(summary) + "," +                              // clinical_summary
-                        safe(investigations) + "," +                       // requested_investigations
-                        "NEW" + "," +                                      // status
-                        safe(appointmentId) + "," +                        // appointment_id
-                        safe(notes) + "," +                                // notes
-                        "" + "," +                                         // created_date
-                        "" + "," +                                         // last_updated
-                        "";                                                // communication_method
+                safe(referralId) + "," + safe(patientId) + "," + safe(referringClinicianId) + "," +
+                        safe(referredToClinicianId) + "," + safe(referringFacilityId) + "," +
+                        safe(referredToFacilityId) + "," + "" + "," + safe(urgency) + "," + safe(reason) + "," +
+                        safe(summary) + "," + safe(investigations) + "," + "NEW" + "," + safe(appointmentId) + "," +
+                        safe(notes) + "," + "" + "," + "" + "," + "";
 
         Referral referral = Referral.fromCSV(csv);
         if (referral == null) return false;
